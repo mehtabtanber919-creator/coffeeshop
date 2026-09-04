@@ -65,16 +65,22 @@ document.addEventListener('DOMContentLoaded', () => {
         showUserAccountModal(savedUser);
       };
 
-      // Auto-fill reservation form for logged in user
+      // Ensure reservation form inputs start empty by default on page load
       const resNameEl = document.getElementById('resName');
       const resPhoneEl = document.getElementById('resPhone');
-      if (resNameEl && !resNameEl.value && savedUser.name) resNameEl.value = savedUser.name;
-      if (resPhoneEl && !resPhoneEl.value && savedUser.phone) resPhoneEl.value = savedUser.phone;
+      if (resNameEl) resNameEl.value = '';
+      if (resPhoneEl) resPhoneEl.value = '';
     } else {
       navSignUpBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> <span class="signup-btn-text">Sign Up</span>`;
       navSignUpBtn.href = 'auth.html#signup';
       navSignUpBtn.onclick = null;
     }
+
+    // Explicitly reset reservation form fields on load
+    const resNameInput = document.getElementById('resName');
+    const resPhoneInput = document.getElementById('resPhone');
+    if (resNameInput) resNameInput.value = '';
+    if (resPhoneInput) resPhoneInput.value = '';
   }
 
   /* ==========================================================================
