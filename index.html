@@ -1148,8 +1148,28 @@
       <div class="order-receipt-summary" id="receiptSummary">
         <!-- Receipt details populated by JS -->
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-primary btn-block" id="modalOkBtn">Done &amp; Continue Browsing</button>
+      <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 1rem;">
+        <button class="btn btn-outline" id="viewHistoryFromCheckoutBtn" style="flex: 1;"><i class="fa-solid fa-clock-rotate-left"></i> Order History</button>
+        <button class="btn btn-primary" id="modalOkBtn" style="flex: 1;">Done Browsing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order History Modal -->
+  <div class="modal-overlay" id="orderHistoryModalOverlay" style="z-index: 99999;">
+    <div class="modal-card order-history-modal-card" style="max-width: 580px; width: 92%; text-align: left; max-height: 85vh; display: flex; flex-direction: column; padding: 2rem; position: relative;">
+      <button class="modal-close-btn" id="closeOrderHistoryModalBtn" aria-label="Close order history"><i class="fa-solid fa-xmark"></i></button>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem; border-bottom: 1px solid #e5d2be; padding-bottom: 1rem;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--caramel), var(--coffee-brown)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; box-shadow: 0 4px 12px rgba(185, 120, 65, 0.3);">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div>
+          <h3 class="modal-title" style="margin-bottom: 2px; font-size: 1.45rem;">Order History</h3>
+          <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);" id="orderHistoryUserSub">Your recent handcrafted coffee & bakery purchases</p>
+        </div>
+      </div>
+      <div id="orderHistoryContent" style="overflow-y: auto; flex: 1; padding-right: 4px;">
+        <!-- Dynamic order history list or state states -->
       </div>
     </div>
   </div>
