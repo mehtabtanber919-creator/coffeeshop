@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brew & Bean | Handcrafted Artisanal Coffee & Bakery</title>
+  <meta name="description" content="Experience freshly roasted specialty coffee, handcrafted drinks, and artisanal pastries at Brew & Bean. Visit our cozy café or order online.">
+
+  <!-- Google Fonts: Playfair Display & DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="container top-bar-content">
+      <span><i class="fa-solid fa-clock"></i> Open Daily: 7:00 AM – 10:00 PM</span>
+      <span class="top-bar-divider">•</span>
+      <span><i class="fa-solid fa-mug-hot"></i> Free Artisanal Cookie on orders above ₹499!</span>
+      <span class="top-bar-divider">•</span>
+      <span><i class="fa-solid fa-phone"></i> +91 98765 43210</span>
+    </div>
+  </div>
+
+  <!-- Sticky Navbar -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="logo" aria-label="Brew & Bean Home">
+        <div class="logo-icon">
+          <i class="fa-solid fa-mug-saucer"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-title">Brew &amp; Bean</span>
+          <span class="brand-subtitle">Specialty Coffee Co.</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Menu -->
+      <nav class="nav-menu" id="navMenu">
+        <ul class="nav-list">
+          <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+          <li class="nav-item"><a href="#categories" class="nav-link">Categories</a></li>
+          <li class="nav-item"><a href="#menu" class="nav-link">Menu</a></li>
+          <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+          <li class="nav-item"><a href="#deal" class="nav-link">Offers</a></li>
+          <li class="nav-item"><a href="#gallery" class="nav-link">Gallery</a></li>
+          <li class="nav-item"><a href="#reservation" class="nav-link">Book a Table</a></li>
+          <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Nav Actions -->
+      <div class="nav-actions">
+        <!-- Single Sign Up Button -->
+        <a href="auth.html#signup" class="btn btn-outline nav-signup-btn" id="navSignUpBtn" aria-label="Sign Up for Account">
+          <i class="fa-solid fa-user-plus"></i> <span class="signup-btn-text">Sign Up</span>
+        </a>
+
+        <!-- Cart Toggle Button -->
+        <button class="cart-btn" id="cartBtn" aria-label="View Shopping Cart">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </button>
+
+        <a href="#reservation" class="btn btn-primary nav-reserve-btn">Reserve</a>
+
+        <!-- Mobile Hamburger Button -->
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="hero-bg-overlay"></div>
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i class="fa-solid fa-seedling"></i> 100% Single-Origin Arabica
+          </div>
+          <h1 class="hero-title">
+            Your Perfect Cup <span class="highlight-caramel">Awaits.</span>
+          </h1>
+          <p class="hero-subtitle">
+            Freshly roasted beans, handcrafted drinks and delicious food — made to make your day a little better.
+          </p>
+          
+          <div class="hero-buttons">
+            <a href="#menu" class="btn btn-primary btn-lg">
+              <i class="fa-solid fa-mug-hot"></i> Order Now
+            </a>
+            <a href="#menu" class="btn btn-outline btn-lg">
+              Explore Menu <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="trust-badges">
+            <div class="trust-item">
+              <div class="trust-icon">
+                <i class="fa-solid fa-star"></i>
+              </div>
+              <div class="trust-text">
+                <strong>4.9★ Rating</strong>
+                <span>Over 3,000+ Reviews</span>
+              </div>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-item">
+              <div class="trust-icon">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <div class="trust-text">
+                <strong>100% Fresh</strong>
+                <span>Roasted On-Site</span>
+              </div>
+            </div>
+            <div class="trust-divider"></div>
+            <div class="trust-item">
+              <div class="trust-icon">
+                <i class="fa-solid fa-door-open"></i>
+              </div>
+              <div class="trust-text">
+                <strong>Open Daily</strong>
+                <span>From 7:00 AM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Media with Floating Pick Card -->
+        <div class="hero-visual">
+          <div class="hero-image-wrapper">
+            <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop" 
+                 alt="Barista pouring artisanal latte art at Brew & Bean" 
+                 class="hero-img" 
+                 id="heroImage" 
+                 loading="eager">
+            
+            <div class="hero-glow"></div>
+
+            <!-- Floating "Today's Pick" Card -->
+            <div class="todays-pick-card" id="todaysPick">
+              <div class="pick-tag">Today's Pick</div>
+              <div class="pick-body">
+                <img src="https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=300&auto=format&fit=crop" 
+                     alt="Caramel Latte" 
+                     class="pick-img">
+                <div class="pick-info">
+                  <h4 class="pick-title">Caramel Latte</h4>
+                  <p class="pick-desc">Rich espresso with buttery caramel & silky foam</p>
+                  <div class="pick-price-row">
+                    <span class="pick-price">₹179</span>
+                    <button class="btn btn-sm btn-primary add-pick-btn" 
+                            data-id="caramel-latte" 
+                            data-name="Caramel Latte" 
+                            data-price="179" 
+                            data-img="https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=300&auto=format&fit=crop"
+                            aria-label="Add Caramel Latte to cart">
+                      <i class="fa-solid fa-plus"></i> Add
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Steam Badge -->
+            <div class="floating-badge fresh-roast-badge">
+              <i class="fa-solid fa-fire-burner"></i>
+              <span>Roasted This Morning</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="section categories-section" id="categories">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-badge">Curated Collections</span>
+          <h2 class="section-title">Explore Our Delights</h2>
+          <p class="section-subtitle">
+            From sunrise roasts to evening indulgences, discover your beverage of choice.
+          </p>
+        </div>
+
+        <div class="categories-grid">
+          <!-- Card 1: Hot Coffee -->
+          <div class="category-card" data-category="hot-coffee">
+            <div class="category-img-container">
+              <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=600&auto=format&fit=crop" 
+                   alt="Hot Coffee Cup" 
+                   loading="lazy">
+              <div class="category-icon-overlay">
+                <i class="fa-solid fa-mug-hot"></i>
+              </div>
+            </div>
+            <div class="category-content">
+              <h3 class="category-title">Hot Coffee</h3>
+              <p class="category-description">
+                Velvety espressos, silky flat whites, and bold pour-overs brewed to perfection.
+              </p>
+              <a href="#menu" class="category-link" data-filter="hot">Browse Hot Brews <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+
+          <!-- Card 2: Cold Coffee -->
+          <div class="category-card" data-category="cold-coffee">
+            <div class="category-img-container">
+              <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=600&auto=format&fit=crop" 
+                   alt="Iced Cold Coffee" 
+                   loading="lazy">
+              <div class="category-icon-overlay">
+                <i class="fa-solid fa-snowflake"></i>
+              </div>
+            </div>
+            <div class="category-content">
+              <h3 class="category-title">Cold Coffee</h3>
+              <p class="category-description">
+                Slow-steeped cold brews, iced lattes, and frappes for a crisp, refreshing kick.
+              </p>
+              <a href="#menu" class="category-link" data-filter="cold">Explore Cold Brews <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+
+          <!-- Card 3: Fresh Bakery -->
+          <div class="category-card" data-category="bakery">
+            <div class="category-img-container">
+              <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=600&auto=format&fit=crop" 
+                   alt="Fresh Croissants and Bakery" 
+                   loading="lazy">
+              <div class="category-icon-overlay">
+                <i class="fa-solid fa-bread-slice"></i>
+              </div>
+            </div>
+            <div class="category-content">
+              <h3 class="category-title">Fresh Bakery</h3>
+              <p class="category-description">
+                Flaky butter croissants, sourdough toasties, and morning pastries baked daily at 6 AM.
+              </p>
+              <a href="#menu" class="category-link" data-filter="bakery">View Bakery Items <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+
+          <!-- Card 4: Desserts -->
+          <div class="category-card" data-category="desserts">
+            <div class="category-img-container">
+              <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" 
+                   alt="Fudgy Chocolate Brownie Dessert" 
+                   loading="lazy">
+              <div class="category-icon-overlay">
+                <i class="fa-solid fa-cake-candles"></i>
+              </div>
+            </div>
+            <div class="category-content">
+              <h3 class="category-title">Desserts</h3>
+              <p class="category-description">
+                Decadent Belgian brownies, cheesecakes, and artisanal cookies paired with your sip.
+              </p>
+              <a href="#menu" class="category-link" data-filter="desserts">Indulge in Desserts <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Best Sellers / Menu Section -->
+    <section class="section menu-section" id="menu">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-badge">Handcrafted Perfection</span>
+          <h2 class="section-title">Best Sellers &amp; Signature Menu</h2>
+          <p class="section-subtitle">
+            Crafted with passion using certified organic beans, farm-fresh milk, and pure culinary love.
+          </p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="menu-filters">
+          <button class="filter-btn active" data-category="all">All Items</button>
+          <button class="filter-btn" data-category="hot">Hot Coffee</button>
+          <button class="filter-btn" data-category="cold">Cold Brews</button>
+          <button class="filter-btn" data-category="bakery">Fresh Bakery</button>
+          <button class="filter-btn" data-category="desserts">Desserts</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+          <!-- Product 1: Classic Cappuccino -->
+          <div class="product-card" data-category="hot">
+            <div class="product-badge">Bestseller</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=600&auto=format&fit=crop" 
+                   alt="Classic Cappuccino" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.9 <span>(420)</span>
+              </div>
+              <h3 class="product-name">Classic Cappuccino</h3>
+              <p class="product-desc">Double shot espresso crowned with dense velvety foam & cocoa dusting.</p>
+              <div class="product-footer">
+                <span class="product-price">₹149</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="classic-cappuccino" 
+                        data-name="Classic Cappuccino" 
+                        data-price="149" 
+                        data-img="https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2: Caramel Latte -->
+          <div class="product-card" data-category="hot">
+            <div class="product-badge">Staff Pick</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=600&auto=format&fit=crop" 
+                   alt="Caramel Latte" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 5.0 <span>(580)</span>
+              </div>
+              <h3 class="product-name">Caramel Latte</h3>
+              <p class="product-desc">Espresso combined with steamed milk and homemade artisan salted caramel.</p>
+              <div class="product-footer">
+                <span class="product-price">₹179</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="caramel-latte" 
+                        data-name="Caramel Latte" 
+                        data-price="179" 
+                        data-img="https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3: Chocolate Mocha -->
+          <div class="product-card" data-category="hot">
+            <div class="product-badge">Rich & Dark</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?q=80&w=600&auto=format&fit=crop" 
+                   alt="Chocolate Mocha" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.8 <span>(310)</span>
+              </div>
+              <h3 class="product-name">Chocolate Mocha</h3>
+              <p class="product-desc">Espresso meets melted dark chocolate ganache, steamed milk & dark shavings.</p>
+              <div class="product-footer">
+                <span class="product-price">₹189</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="chocolate-mocha" 
+                        data-name="Chocolate Mocha" 
+                        data-price="189" 
+                        data-img="https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4: Americano -->
+          <div class="product-card" data-category="hot">
+            <div class="product-badge">Pure Espresso</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1551030173-122aabc4489c?q=80&w=600&auto=format&fit=crop" 
+                   alt="Classic Americano" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.7 <span>(190)</span>
+              </div>
+              <h3 class="product-name">Americano</h3>
+              <p class="product-desc">Bold double shot of specialty espresso diluted with hot mineral water.</p>
+              <div class="product-footer">
+                <span class="product-price">₹129</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="americano" 
+                        data-name="Americano" 
+                        data-price="129" 
+                        data-img="https://images.unsplash.com/photo-1551030173-122aabc4489c?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 5: Cold Coffee -->
+          <div class="product-card" data-category="cold">
+            <div class="product-badge">Summer Hit</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=600&auto=format&fit=crop" 
+                   alt="Iced Cold Coffee" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.9 <span>(510)</span>
+              </div>
+              <h3 class="product-name">Cold Coffee</h3>
+              <p class="product-desc">Chilled espresso blended with creamy whole milk and vanilla ice cream.</p>
+              <div class="product-footer">
+                <span class="product-price">₹159</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="cold-coffee" 
+                        data-name="Cold Coffee" 
+                        data-price="159" 
+                        data-img="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 6: Chocolate Brownie -->
+          <div class="product-card" data-category="desserts">
+            <div class="product-badge">Freshly Baked</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop" 
+                   alt="Fudgy Chocolate Brownie" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 5.0 <span>(640)</span>
+              </div>
+              <h3 class="product-name">Chocolate Brownie</h3>
+              <p class="product-desc">Gooey Belgian chocolate fudge brownie served warm with a chocolate drizzle.</p>
+              <div class="product-footer">
+                <span class="product-price">₹99</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="chocolate-brownie" 
+                        data-name="Chocolate Brownie" 
+                        data-price="99" 
+                        data-img="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 7: French Butter Croissant (Bakery bonus) -->
+          <div class="product-card" data-category="bakery">
+            <div class="product-badge">Flaky & Crisp</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=600&auto=format&fit=crop" 
+                   alt="French Butter Croissant" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.9 <span>(280)</span>
+              </div>
+              <h3 class="product-name">Butter Croissant</h3>
+              <p class="product-desc">Golden, buttery multi-layered pastry baked fresh every morning.</p>
+              <div class="product-footer">
+                <span class="product-price">₹119</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="butter-croissant" 
+                        data-name="Butter Croissant" 
+                        data-price="119" 
+                        data-img="https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 8: Nitro Cold Brew (Cold bonus) -->
+          <div class="product-card" data-category="cold">
+            <div class="product-badge">Specialty</div>
+            <div class="product-img-wrapper">
+              <img src="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?q=80&w=600&auto=format&fit=crop" 
+                   alt="Nitro Cold Brew" 
+                   loading="lazy">
+            </div>
+            <div class="product-details">
+              <div class="product-rating">
+                <i class="fa-solid fa-star"></i> 4.9 <span>(340)</span>
+              </div>
+              <h3 class="product-name">Nitro Cold Brew</h3>
+              <p class="product-desc">Cold brew infused with nitrogen for a cascading creamy texture and sweet finish.</p>
+              <div class="product-footer">
+                <span class="product-price">₹189</span>
+                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                        data-id="nitro-cold-brew" 
+                        data-name="Nitro Cold Brew" 
+                        data-price="189" 
+                        data-img="https://images.unsplash.com/photo-1517256064527-09c73fc73e38?q=80&w=600&auto=format&fit=crop">
+                  <i class="fa-solid fa-plus"></i> Add to Cart
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section about-section" id="about">
+      <div class="container about-container">
+        <div class="about-visual">
+          <div class="about-image-stack">
+            <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=800&auto=format&fit=crop" 
+                 alt="Warm Brew and Bean Coffee Shop Interior" 
+                 class="about-img-main" 
+                 loading="lazy">
+            <div class="about-accent-badge">
+              <i class="fa-solid fa-heart"></i>
+              <span>Crafted with Care</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-content">
+          <span class="section-badge">Our Heritage</span>
+          <h2 class="section-title">More Than Just Coffee.</h2>
+          <p class="about-lead">
+            Brew &amp; Bean started with one simple idea: great coffee should bring people together.
+          </p>
+          <p class="about-text">
+            From ethical sourcing in the lush hills of Coorg and Chikmagalur to precision roasting in our micro-roastery, we honor every step of the bean's journey. Whether you are catching up with an old friend or seeking a tranquil corner to read, our space was crafted to feel like a warm hug.
+          </p>
+
+          <!-- Statistics -->
+          <div class="about-stats">
+            <div class="stat-card">
+              <span class="stat-number">10+</span>
+              <span class="stat-label">Years Experience</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">50K+</span>
+              <span class="stat-label">Happy Customers</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-number">20+</span>
+              <span class="stat-label">Coffee Varieties</span>
+            </div>
+          </div>
+
+          <div class="about-actions">
+            <button class="btn btn-primary" id="openStoryModalBtn">
+              Discover Our Story <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <div class="barista-quote">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" alt="Head Barista" class="quote-avatar">
+              <div class="quote-text">
+                <span class="quote-author">Elena Vance</span>
+                <span class="quote-role">Head Roaster &amp; Co-Founder</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Special Offer Section -->
+    <section class="special-offer-section" id="deal">
+      <div class="container">
+        <div class="offer-banner">
+          <div class="offer-decor-bean bean-1"><i class="fa-solid fa-cookie-bite"></i></div>
+          <div class="offer-decor-bean bean-2"><i class="fa-solid fa-mug-saucer"></i></div>
+
+          <div class="offer-content">
+            <div class="offer-badge">
+              <i class="fa-solid fa-sun"></i> Morning Special • 7 AM – 11 AM
+            </div>
+            <h2 class="offer-title">Morning Brew Deal</h2>
+            <p class="offer-desc">
+              Start your morning right with our freshly brewed coffee and a delicious croissant.
+            </p>
+            <div class="offer-pricing">
+              <span class="price-current">₹199</span>
+              <span class="price-original">₹279</span>
+              <span class="price-saving">Save 29% Today</span>
+            </div>
+            <div class="offer-cta-group">
+              <button class="btn btn-primary btn-lg" id="grabDealBtn">
+                <i class="fa-solid fa-gift"></i> Grab The Deal
+              </button>
+              <span class="offer-hint"><i class="fa-solid fa-shield-halved"></i> Includes Any Regular Coffee + Fresh Butter Croissant</span>
+            </div>
+          </div>
+
+          <div class="offer-visual">
+            <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?q=80&w=700&auto=format&fit=crop" 
+                 alt="Coffee cup and flaky croissant morning combo" 
+                 class="offer-img" 
+                 loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Masonry-Style Photo Gallery -->
+    <section class="section gallery-section" id="gallery">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-badge">Visual Journey</span>
+          <h2 class="section-title">Life Inside Brew &amp; Bean</h2>
+          <p class="section-subtitle">
+            Glimpses of handcrafted artistry, warm wooden acoustics, and unforgettable moments.
+          </p>
+        </div>
+
+        <div class="gallery-grid">
+          <!-- Item 1: Coffee -->
+          <div class="gallery-item" data-full="https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1200&auto=format&fit=crop" data-caption="Artisan Latte Art with silky micro-foam">
+            <img src="https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=600&auto=format&fit=crop" alt="Artisan Latte" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Specialty Brew</span>
+              <h4 class="gallery-caption">Silky Latte Art</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+
+          <!-- Item 2: Café interior -->
+          <div class="gallery-item item-wide" data-full="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=1200&auto=format&fit=crop" data-caption="Sunlit rustic seating and warm ambient glow">
+            <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=800&auto=format&fit=crop" alt="Café Interior" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Atmosphere</span>
+              <h4 class="gallery-caption">Rustic Café Sanctuary</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+
+          <!-- Item 3: Barista -->
+          <div class="gallery-item" data-full="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop" data-caption="Barista crafting precise manual pour-over">
+            <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=600&auto=format&fit=crop" alt="Barista Crafting Coffee" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Craftsmanship</span>
+              <h4 class="gallery-caption">Barista in Motion</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+
+          <!-- Item 4: Desserts -->
+          <div class="gallery-item" data-full="https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=1200&auto=format&fit=crop" data-caption="Decadent pastries and dessert selections">
+            <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?q=80&w=600&auto=format&fit=crop" alt="Delicious Desserts" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Desserts</span>
+              <h4 class="gallery-caption">Decadent Confections</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+
+          <!-- Item 5: Bakery -->
+          <div class="gallery-item" data-full="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop" data-caption="Freshly baked sourdough and golden croissants">
+            <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop" alt="Bakery Fresh Breads" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Bakery</span>
+              <h4 class="gallery-caption">Morning Oven Delights</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+
+          <!-- Item 6: Cozy seating -->
+          <div class="gallery-item" data-full="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1200&auto=format&fit=crop" data-caption="Cozy reading nooks and ambient coffee conversation corners">
+            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=600&auto=format&fit=crop" alt="Cozy Seating Corner" loading="lazy">
+            <div class="gallery-overlay">
+              <span class="gallery-tag">Cozy Corners</span>
+              <h4 class="gallery-caption">Quiet Corners to Unwind</h4>
+              <i class="fa-solid fa-magnifying-glass-plus zoom-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Reviews Section -->
+    <section class="section reviews-section" id="reviews">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-badge">Community Love</span>
+          <h2 class="section-title">What Our Guests Say</h2>
+          <p class="section-subtitle">
+            Real experiences from coffee lovers, digital nomads, and morning regulars.
+          </p>
+        </div>
+
+        <div class="reviews-grid">
+          <!-- Review 1 -->
+          <div class="review-card">
+            <div class="review-rating">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="review-text">
+              “The coffee is amazing and the atmosphere is perfect for relaxing or working. Their Caramel Latte has quickly become my morning non-negotiable ritual!”
+            </p>
+            <div class="reviewer-meta">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" 
+                   alt="Aaradhya Sharma" 
+                   class="reviewer-avatar">
+              <div class="reviewer-info">
+                <h4 class="reviewer-name">Aaradhya Sharma</h4>
+                <span class="reviewer-tag">Regular Patron • 2 yrs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="review-card">
+            <div class="review-rating">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="review-text">
+              “Hands down the most thoughtful specialty coffee in town. The staff knows their beans, the playlist is peaceful, and the warm brownies are sublime.”
+            </p>
+            <div class="reviewer-meta">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150&auto=format&fit=crop" 
+                   alt="Rohan Mehta" 
+                   class="reviewer-avatar">
+              <div class="reviewer-info">
+                <h4 class="reviewer-name">Rohan Mehta</h4>
+                <span class="reviewer-tag">Coffee Enthusiast</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="review-card">
+            <div class="review-rating">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+            </div>
+            <p class="review-text">
+              “We booked a table for our weekend book club and the service was pristine. The Morning Brew deal is unbeatable value. 10/10 recommend Brew &amp; Bean!”
+            </p>
+            <div class="reviewer-meta">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop" 
+                   alt="Pooja Sen" 
+                   class="reviewer-avatar">
+              <div class="reviewer-info">
+                <h4 class="reviewer-name">Pooja Sen</h4>
+                <span class="reviewer-tag">Book Club Host</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Table Reservation Section -->
+    <section class="section reservation-section" id="reservation">
+      <div class="container">
+        <div class="reservation-wrapper">
+          <!-- Reservation Form -->
+          <div class="reservation-card">
+            <div class="reservation-header">
+              <span class="section-badge">Reserve Your Space</span>
+              <h2 class="reservation-title">Book a Table</h2>
+              <p class="reservation-subtitle">
+                Planning a meetup, a date, or focused remote work? Reserve a spot ahead of time.
+              </p>
+            </div>
+
+            <form id="reservationForm" class="reservation-form" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="resName">Full Name <span class="req">*</span></label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="resName" name="name" placeholder="e.g. Danny Ross" required>
+                  </div>
+                  <span class="error-msg" id="resNameError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="resPhone">Phone Number <span class="req">*</span></label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="tel" id="resPhone" name="phone" placeholder="e.g. +91 98765 43210" required>
+                  </div>
+                  <span class="error-msg" id="resPhoneError"></span>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="resDate">Reservation Date <span class="req">*</span></label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-calendar-day"></i>
+                    <input type="date" id="resDate" name="date" required>
+                  </div>
+                  <span class="error-msg" id="resDateError"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="resTime">Preferred Time <span class="req">*</span></label>
+                  <div class="input-with-icon">
+                    <i class="fa-solid fa-clock"></i>
+                    <select id="resTime" name="time" required>
+                      <option value="">Select a time slot</option>
+                      <option value="08:00 AM">08:00 AM - Morning Fresh</option>
+                      <option value="10:00 AM">10:00 AM - Mid-Morning</option>
+                      <option value="12:00 PM">12:00 PM - Lunch Brew</option>
+                      <option value="02:30 PM">02:30 PM - Afternoon Chill</option>
+                      <option value="05:00 PM">05:00 PM - Golden Hour</option>
+                      <option value="07:30 PM">07:30 PM - Evening Cozy</option>
+                    </select>
+                  </div>
+                  <span class="error-msg" id="resTimeError"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="resGuests">Number of Guests <span class="req">*</span></label>
+                <div class="input-with-icon">
+                  <i class="fa-solid fa-users"></i>
+                  <select id="resGuests" name="guests" required>
+                    <option value="1">1 Person (Solo table / quiet nook)</option>
+                    <option value="2" selected>2 Persons (Cozy duo table)</option>
+                    <option value="3-4">3 to 4 Persons (Booth table)</option>
+                    <option value="5-8">5 to 8 Persons (Communal oak table)</option>
+                    <option value="8+">8+ Persons (Event/Party inquiry)</option>
+                  </select>
+                </div>
+                <span class="error-msg" id="resGuestsError"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="resRequests">Special Request (Optional)</label>
+                <div class="input-with-icon textarea-icon">
+                  <i class="fa-solid fa-comment-dots"></i>
+                  <textarea id="resRequests" name="requests" rows="3" placeholder="Window seat, quiet corner for study, anniversary, dairy allergies..."></textarea>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitReservationBtn">
+                <i class="fa-solid fa-check"></i> Reserve My Table
+              </button>
+            </form>
+          </div>
+
+          <!-- Reservation Visual & Features -->
+          <div class="reservation-visual">
+            <img src="https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=900&auto=format&fit=crop" 
+                 alt="Warm ambient café interior table ready for reservation" 
+                 class="res-img" 
+                 loading="lazy">
+            <div class="res-perks">
+              <div class="perk-item">
+                <i class="fa-solid fa-wifi"></i>
+                <span>High-Speed 300 Mbps Wi-Fi</span>
+              </div>
+              <div class="perk-item">
+                <i class="fa-solid fa-plug"></i>
+                <span>Charging Outlets at Every Booth</span>
+              </div>
+              <div class="perk-item">
+                <i class="fa-solid fa-music"></i>
+                <span>Lo-Fi Jazz &amp; Acoustic Soundscapes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location & Contact Section -->
+    <section class="section contact-section" id="contact">
+      <div class="container">
+        <div class="section-header text-center">
+          <span class="section-badge">Find Us</span>
+          <h2 class="section-title">Visit Our Coffee Sanctuary</h2>
+          <p class="section-subtitle">
+            Conveniently nestled in the city center. Step in for the aroma, stay for the warmth.
+          </p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Info Cards -->
+          <div class="contact-info-panel">
+            <div class="contact-card">
+              <div class="contact-icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Our Café Address</h3>
+                <p>123 Coffee Street, Central Boulevard, Your City - 560001</p>
+                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="contact-action-link">
+                  Open in Google Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">
+                <i class="fa-solid fa-phone-volume"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Phone &amp; Orders</h3>
+                <p>+91 98765 43210</p>
+                <span class="contact-sub">Available daily from 7:00 AM to 10:00 PM</span>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">
+                <i class="fa-solid fa-envelope"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Email Inquiries</h3>
+                <p><a href="mailto:hello@brewandbean.com">hello@brewandbean.com</a></p>
+                <span class="contact-sub">Corporate catering, events &amp; feedback</span>
+              </div>
+            </div>
+
+            <div class="contact-card">
+              <div class="contact-icon">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <div class="contact-details">
+                <h3>Opening Hours</h3>
+                <p class="hours-highlight">Monday – Sunday: 7:00 AM – 10:00 PM</p>
+                <span class="contact-sub">Fresh bakery batches rolled out at 7 AM, 11 AM &amp; 4 PM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Map Container -->
+          <div class="contact-map-wrapper">
+            <div class="map-container">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.973719702221!2d77.5945627!3d12.9715987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae1670c9b44e6d%3A0xf8dfc3e8517e4fe0!2sBengaluru%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1689000000000!5m2!1sen!2sin" 
+                width="100%" 
+                height="100%" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade"
+                title="Brew & Bean Coffee Shop Location">
+              </iframe>
+              <div class="map-floating-badge">
+                <div class="badge-dot"></div>
+                <span>Brew &amp; Bean Central</span>
+                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-primary">
+                  Get Directions
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="section newsletter-section">
+      <div class="container">
+        <div class="newsletter-card">
+          <div class="newsletter-icon">
+            <i class="fa-regular fa-paper-plane"></i>
+          </div>
+          <h2 class="newsletter-title">Get Fresh Coffee News</h2>
+          <p class="newsletter-subtitle">
+            Subscribe for special offers, new drinks and café updates delivered fresh to your inbox.
+          </p>
+
+          <form id="newsletterForm" class="newsletter-form" novalidate>
+            <div class="newsletter-input-group">
+              <input type="email" id="newsEmail" placeholder="Enter your email address" required>
+              <button type="submit" class="btn btn-primary" id="subscribeBtn">
+                Subscribe <i class="fa-solid fa-envelope"></i>
+              </button>
+            </div>
+            <p class="newsletter-disclaimer">
+              <i class="fa-solid fa-lock"></i> We respect your privacy. No spam, ever. Unsubscribe anytime.
+            </p>
+          </form>
+          <div id="newsletterSuccess" class="newsletter-success" style="display: none;">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Thank you for subscribing! Check your inbox for 10% off your next cup.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="footer-grid">
+        <!-- Col 1: Brand Info -->
+        <div class="footer-col brand-col">
+          <a href="#home" class="logo footer-logo">
+            <div class="logo-icon"><i class="fa-solid fa-mug-saucer"></i></div>
+            <div class="logo-text">
+              <span class="brand-title">Brew &amp; Bean</span>
+              <span class="brand-subtitle">Specialty Coffee Co.</span>
+            </div>
+          </a>
+          <p class="footer-about">
+            A cozy corner dedicated to the pursuit of artisanal coffee perfection. Hand-roasted beans, warm camaraderie, and soulful moments.
+          </p>
+          <div class="social-links">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Brew & Bean Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Brew & Bean Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" aria-label="Brew & Bean YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Brew & Bean Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
+        </div>
+
+        <!-- Col 2: Quick Links -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About Our Roastery</a></li>
+            <li><a href="#menu">Signature Menu</a></li>
+            <li><a href="#deal">Morning Special Deal</a></li>
+            <li><a href="#gallery">Photo Gallery</a></li>
+            <li><a href="#reviews">Customer Stories</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Menu Links -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Coffee &amp; Bites</h4>
+          <ul class="footer-links">
+            <li><a href="#menu" data-footer-filter="hot">Hot Espresso &amp; Lattes</a></li>
+            <li><a href="#menu" data-footer-filter="cold">Cold Brews &amp; Frappés</a></li>
+            <li><a href="#menu" data-footer-filter="bakery">Butter Croissants &amp; Loaves</a></li>
+            <li><a href="#menu" data-footer-filter="desserts">Belgian Chocolate Brownies</a></li>
+            <li><a href="#reservation">Table Reservation</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 4: Contact & Hours -->
+        <div class="footer-col">
+          <h4 class="footer-heading">Contact &amp; Visit</h4>
+          <ul class="footer-contact">
+            <li><i class="fa-solid fa-location-dot"></i> 123 Coffee Street, Your City</li>
+            <li><i class="fa-solid fa-phone"></i> +91 98765 43210</li>
+            <li><i class="fa-solid fa-envelope"></i> hello@brewandbean.com</li>
+            <li><i class="fa-solid fa-clock"></i> Mon–Sun: 7:00 AM – 10:00 PM</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="copyright">Copyright &copy; 2026 Brew &amp; Bean Specialty Coffee Co. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="#home">Privacy Policy</a>
+          <span>•</span>
+          <a href="#home">Terms of Service</a>
+          <span>•</span>
+          <a href="#home">Refund Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Slide-In Cart Drawer -->
+  <div class="cart-drawer-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping Cart">
+    <div class="cart-drawer-header">
+      <div class="cart-title-row">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <h3>Your Order (<span id="cartDrawerCount">0</span>)</h3>
+      </div>
+      <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close Cart">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Free Delivery Progress -->
+    <div class="cart-delivery-progress">
+      <div class="progress-labels">
+        <span id="deliveryText">Add ₹300 more for Free Delivery!</span>
+        <span id="deliveryPercent">40%</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="deliveryBarFill" style="width: 40%;"></div>
+      </div>
+    </div>
+
+    <!-- Cart Items List Container -->
+    <div class="cart-items-container" id="cartItemsList">
+      <!-- Injected by JavaScript or empty state -->
+    </div>
+
+    <!-- Cart Drawer Footer -->
+    <div class="cart-drawer-footer" id="cartFooter">
+      <div class="cart-summary-row">
+        <span>Subtotal</span>
+        <span class="summary-val" id="cartSubtotal">₹0</span>
+      </div>
+      <div class="cart-summary-row">
+        <span>Taxes &amp; Packaging</span>
+        <span class="summary-val" id="cartTaxes">₹0</span>
+      </div>
+      <div class="cart-summary-row total-row">
+        <strong>Total Amount</strong>
+        <strong class="summary-val total-val" id="cartTotal">₹0</strong>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg checkout-btn" id="checkoutBtn">
+        Proceed to Checkout <i class="fa-solid fa-arrow-right"></i>
+      </button>
+      <button class="btn-clear-cart" id="clearCartBtn">Clear Cart</button>
+    </div>
+  </aside>
+
+  <!-- Checkout Confirmation Modal -->
+  <div class="modal-overlay" id="checkoutModalOverlay">
+    <div class="modal-card checkout-modal-card">
+      <button class="modal-close-btn" id="closeCheckoutModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-icon-success">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 class="modal-title">Order Placed Successfully!</h3>
+      <p class="modal-text">
+        Thank you for ordering with Brew &amp; Bean. Your handcrafted drinks and freshly baked treats are being prepared with love.
+      </p>
+      <div class="order-receipt-summary" id="receiptSummary">
+        <!-- Receipt details populated by JS -->
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-block" id="modalOkBtn">Done &amp; Continue Browsing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reservation Confirmation Modal -->
+  <div class="modal-overlay" id="resModalOverlay">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="closeResModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-icon-success">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <h3 class="modal-title">Table Reserved!</h3>
+      <p class="modal-text" id="resModalDetails">
+        Your table has been reserved. We look forward to welcoming you!
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-block" id="resDoneBtn">Wonderful, See You Soon</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Discover Story Modal -->
+  <div class="modal-overlay" id="storyModalOverlay">
+    <div class="modal-card story-modal-card">
+      <button class="modal-close-btn" id="closeStoryModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      <div class="story-modal-body">
+        <span class="section-badge">Since 2016</span>
+        <h3 class="modal-title">The Brew &amp; Bean Journey</h3>
+        <p>
+          Founded in a quiet brick alley by two lifelong coffee explorers, Brew &amp; Bean began with an uncompromising mission: to treat coffee as an art form rather than a fast commodity.
+        </p>
+        <p>
+          Every single bean is responsibly sourced directly from shade-grown estates in the Western Ghats. We small-batch roast every Wednesday and Saturday in our vintage cast-iron roaster to lock in notes of dark cocoa, dried stone fruit, and delicate wildflower honey.
+        </p>
+        <div class="story-stats-row">
+          <div class="s-stat"><strong>100%</strong> Fair Trade</div>
+          <div class="s-stat"><strong>Zero</strong> Artificial Flavors</div>
+          <div class="s-stat"><strong>Daily</strong> Fresh Bakes</div>
+        </div>
+        <button class="btn btn-primary" id="closeStoryActionBtn">Back to Our Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div class="lightbox-overlay" id="lightboxModal">
+    <button class="lightbox-close" id="lightboxCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+    <div class="lightbox-content">
+      <img src="" alt="Enlarged gallery photo" id="lightboxImage" class="lightbox-img">
+      <div class="lightbox-caption-box" id="lightboxCaption"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Back To Top Floating Button -->
+  <button class="back-to-top-btn" id="backToTopBtn" aria-label="Back to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+
+  <!-- JavaScript -->
+  <script src="script.js"></script>
+</body>
+</html>
