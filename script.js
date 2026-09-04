@@ -1294,8 +1294,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const user = getLoggedInUser();
+        const isValidUuid = user && user.id && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(user.id);
         const resPayload = {
-          user_id: user ? user.id : null,
+          user_id: isValidUuid ? user.id : null,
           name: nameVal,
           phone: phoneVal,
           reservation_date: dateVal,
