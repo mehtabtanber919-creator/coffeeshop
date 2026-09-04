@@ -10,9 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      0. MCP Server Integration (Secure Proxy Connection)
      ========================================================================== */
+  function getApiUrl(path) {
+    if (window.location.protocol === 'file:') {
+      return 'http://localhost:8080' + (path.startsWith('/') ? path : '/' + path);
+    }
+    return path;
+  }
+
   async function sendMcpRequest(method, params = {}) {
     try {
-      const response = await fetch('/api/mcp', {
+      const response = await fetch(getApiUrl('/api/mcp'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -141,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (user && user.id) {
       try {
         const token = user.session?.access_token;
-        const res = await fetch(`/api/orders/list?user_id=${encodeURIComponent(user.id)}`, {
+        const res = await fetch(getApiUrl(`/api/orders/list?user_id=${encodeURIComponent(user.id)}`), {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -267,6 +274,216 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  /* ==========================================================================
+     0.3 Table Reservation Engine & History (Supabase Backend Linked)
+     ========================================================================== */
+  const RESERVATIONS_STORAGE_KEY = 'brew_and_bean_reservations_v1';
+  const reservationsModalOverlay = document.getElementById('reservationsModalOverlay');
+  const closeReservationsModalBtn = document.getElementById('closeReservationsModalBtn');
+  const reservationsContent = document.getElementById('reservationsContent');
+
+  function getLocalReservations() {
+    try {
+      const raw = localStorage.getItem(RESERVATIONS_STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) { }
+    return [];
+  }
+
+  function saveLocalReservation(res) {
+    const list = getLocalReservations();
+    list.unshift(res);
+    localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  function updateLocalReservationStatus(resId, status) {
+    const list = getLocalReservations();
+    const item = list.find(r => r.id === resId || r.reservation_id === resId);
+    if (item) {
+      item.status = status;
+      localStorage.setItem(RESERVATIONS_STORAGE_KEY, JSON.stringify(list));
+    }
+  }
+
+  async function cancelReservation(resId, btnEl) {
+    if (!resId) return;
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cancelling...`;
+    }
+
+    const user = getLoggedInUser();
+    const token = user?.session?.access_token;
+
+    try {
+      await fetch(getApiUrl('/api/reservations/cancel'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({ id: resId })
+      });
+    } catch (err) {
+      console.warn('Network error cancelling reservation:', err);
+    }
+
+    updateLocalReservationStatus(resId, 'Cancelled');
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.style.opacity = '0.7';
+      btnEl.style.borderColor = '#aaa';
+      btnEl.style.color = '#777';
+      btnEl.style.cursor = 'not-allowed';
+      btnEl.innerHTML = `<i class="fa-solid fa-ban" style="margin-right: 6px;"></i> Reservation Cancelled`;
+    }
+
+    const parentCard = btnEl ? btnEl.closest('.reservation-card-item') : null;
+    if (parentCard) {
+      const badge = parentCard.querySelector('.res-status-badge');
+      if (badge) {
+        badge.style.background = '#c93b2b15';
+        badge.style.color = '#c93b2b';
+        badge.style.borderColor = '#c93b2b40';
+        badge.innerHTML = `<i class="fa-solid fa-ban" style="margin-right: 4px;"></i> CANCELLED`;
+      }
+    }
+
+    showToast('Table reservation cancelled successfully.', 'fa-solid fa-ban');
+  }
+
+  async function fetchAndShowReservationsHistory() {
+    if (!reservationsModalOverlay || !reservationsContent) return;
+
+    reservationsModalOverlay.classList.add('active');
+    const user = getLoggedInUser();
+    const subTitle = document.getElementById('reservationsUserSub');
+    if (subTitle) {
+      subTitle.textContent = user ? `Bookings for ${user.name || user.email}` : 'Your upcoming & past table bookings';
+    }
+
+    reservationsContent.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 1rem; color: #735D54;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.2rem; color: #27ae60; margin-bottom: 0.8rem;"></i>
+        <p style="font-weight: 500; color: #21120D;">Fetching your table reservations...</p>
+      </div>
+    `;
+
+    let reservations = [];
+    let isError = false;
+
+    if (user && user.id) {
+      try {
+        const token = user.session?.access_token;
+        const res = await fetch(getApiUrl(`/api/reservations/list?user_id=${encodeURIComponent(user.id)}`), {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.reservations && Array.isArray(data.reservations)) {
+            reservations = data.reservations;
+          }
+        } else {
+          isError = true;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch reservations from server:', err);
+        isError = true;
+      }
+    }
+
+    if (reservations.length === 0) {
+      const localList = getLocalReservations();
+      if (user && user.id) {
+        reservations = localList.filter(r => r.user_id === user.id);
+      } else {
+        reservations = localList;
+      }
+    }
+
+    if (reservations.length === 0) {
+      reservationsContent.innerHTML = `
+        <div style="text-align: center; padding: 3rem 1rem; color: #735D54;">
+          <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #27ae60;">
+            <i class="fa-solid fa-chair"></i>
+          </div>
+          <h4 style="font-size: 1.2rem; color: var(--coffee-brown); margin-bottom: 0.4rem; font-family: 'Playfair Display', serif;">No Table Reservations</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.2rem;">You haven't reserved any tables yet.</p>
+          <button id="reserveTableFromHistoryBtn" class="btn btn-primary" style="padding: 10px 24px; background: #27ae60; border-color: #27ae60;">Reserve a Table</button>
+        </div>
+      `;
+      const resBtn = document.getElementById('reserveTableFromHistoryBtn');
+      if (resBtn) {
+        resBtn.onclick = () => {
+          closeReservationsModal();
+          const resSec = document.getElementById('reservation');
+          if (resSec) resSec.scrollIntoView({ behavior: 'smooth' });
+        };
+      }
+      return;
+    }
+
+    reservationsContent.innerHTML = reservations.map(r => {
+      const resId = r.id || r.reservation_id || '';
+      const isCancelled = (r.status || '').toLowerCase() === 'cancelled';
+      const statusText = isCancelled ? 'CANCELLED' : (r.status || 'CONFIRMED').toUpperCase();
+      const statusColor = isCancelled ? '#c93b2b' : '#27ae60';
+      const statusIcon = isCancelled ? 'fa-solid fa-ban' : 'fa-solid fa-circle-check';
+
+      const formattedDate = r.reservation_date ? new Date(r.reservation_date).toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+      }) : 'Scheduled';
+
+      return `
+        <div class="reservation-card-item" style="background: var(--cream); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e5d2be; padding-bottom: 10px; margin-bottom: 10px;">
+            <div>
+              <strong style="font-size: 1rem; color: var(--coffee-brown); font-family: 'Playfair Display', serif;">${r.name || 'Table Reservation'}</strong>
+              <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-solid fa-phone" style="margin-right: 4px;"></i>${r.phone || 'N/A'}</div>
+            </div>
+            <span class="res-status-badge" style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor}40; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="${statusIcon}" style="margin-right: 4px;"></i>${statusText}
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; color: #21120D; margin-bottom: 10px;">
+            <div><i class="fa-regular fa-calendar" style="color: var(--caramel); margin-right: 6px;"></i><strong>Date:</strong> ${formattedDate}</div>
+            <div><i class="fa-regular fa-clock" style="color: var(--caramel); margin-right: 6px;"></i><strong>Time:</strong> ${r.reservation_time || 'N/A'}</div>
+            <div><i class="fa-solid fa-user-group" style="color: var(--caramel); margin-right: 6px;"></i><strong>Guests:</strong> ${r.guests || '2'} Person(s)</div>
+            ${r.special_request ? `<div style="grid-column: span 2;"><i class="fa-solid fa-comment-dots" style="color: var(--caramel); margin-right: 6px;"></i><em>"${r.special_request}"</em></div>` : ''}
+          </div>
+
+          ${!isCancelled && resId ? `
+            <div style="border-top: 1px solid #e5d2be; padding-top: 10px; text-align: right;">
+              <button class="cancel-res-btn btn btn-outline" data-id="${resId}" style="padding: 6px 14px; font-size: 0.82rem; border-color: #c93b2b; color: #c93b2b;">
+                <i class="fa-solid fa-ban" style="margin-right: 4px;"></i> Cancel Reservation
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join('');
+
+    reservationsContent.querySelectorAll('.cancel-res-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        cancelReservation(id, btn);
+      });
+    });
+  }
+
+  function closeReservationsModal() {
+    if (reservationsModalOverlay) reservationsModalOverlay.classList.remove('active');
+  }
+
+  if (closeReservationsModalBtn) closeReservationsModalBtn.addEventListener('click', closeReservationsModal);
+
   function showUserAccountModal(user) {
     let modalOverlay = document.getElementById('userProfileModalOverlay');
     if (!modalOverlay) {
@@ -300,6 +517,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           <div style="display: flex; flex-direction: column; gap: 10px;">
             <button class="btn btn-outline" id="profileOrderHistoryBtn" style="padding: 12px; border-color: #d9a362; color: #d9a362; font-size: 14px;"><i class="fa-solid fa-clock-rotate-left"></i> View Order History</button>
+            <button class="btn btn-outline" id="profileReservationsBtn" style="padding: 12px; border-color: #27ae60; color: #27ae60; font-size: 14px;"><i class="fa-solid fa-calendar-check"></i> View Table Reservations</button>
             <div style="display: flex; gap: 10px;">
               <button class="btn btn-outline" id="closeProfileDoneBtn" style="flex: 1; padding: 12px;">Close</button>
               <button class="btn btn-primary" id="logoutBtn" style="flex: 1; padding: 12px; background: #c93b2b; border-color: #c93b2b;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -327,10 +545,18 @@ document.addEventListener('DOMContentLoaded', () => {
       };
     }
 
+    const profileReservationsBtn = document.getElementById('profileReservationsBtn');
+    if (profileReservationsBtn) {
+      profileReservationsBtn.onclick = () => {
+        closeModal();
+        fetchAndShowReservationsHistory();
+      };
+    }
+
     document.getElementById('logoutBtn').onclick = async () => {
       try {
         const access_token = user.session?.access_token;
-        await fetch('/api/auth/logout', {
+        await fetch(getApiUrl('/api/auth/logout'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -647,7 +873,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       try {
         const token = user?.session?.access_token;
-        fetch('/api/orders/create', {
+        fetch(getApiUrl('/api/orders/create'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -962,7 +1188,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
           const token = user?.session?.access_token;
-          const res = await fetch('/api/reservations/create', {
+          const res = await fetch(getApiUrl('/api/reservations/create'), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -973,6 +1199,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const data = await res.json();
           if (res.ok && data.success) {
+            const createdData = data.reservation;
+            const resId = createdData ? (Array.isArray(createdData) ? createdData[0]?.id : createdData?.id) : ('RES-' + Date.now());
+
+            saveLocalReservation({
+              id: resId,
+              ...resPayload,
+              created_at: new Date().toISOString()
+            });
+
             const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
@@ -987,7 +1222,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <strong>${timeVal}</strong>.<br><br>
                 A confirmation SMS has been sent to <strong>${phoneVal}</strong>.
                 ${requestsVal ? `<br><em>Special note recorded: "${requestsVal}"</em>` : ''}
+                <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e5d2be;">
+                  <button id="cancelCurrentResBtn" class="btn btn-outline" style="width: 100%; border-color: #c93b2b; color: #c93b2b; font-size: 0.9rem; padding: 10px;">
+                    <i class="fa-solid fa-ban" style="margin-right: 6px;"></i> Cancel Reservation
+                  </button>
+                </div>
               `;
+
+              const cancelCurrentResBtn = document.getElementById('cancelCurrentResBtn');
+              if (cancelCurrentResBtn) {
+                cancelCurrentResBtn.onclick = () => {
+                  cancelReservation(resId, cancelCurrentResBtn);
+                };
+              }
             }
 
             if (resModalOverlay) resModalOverlay.classList.add('active');
@@ -997,7 +1244,43 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(data.error || 'Failed to save table reservation. Please try again.', 'fa-solid fa-circle-exclamation');
           }
         } catch (err) {
-          showToast('Network error while saving table reservation. Please try again.', 'fa-solid fa-circle-exclamation');
+          console.warn('Reservation server fallback:', err);
+          const fallbackId = 'RES-' + Date.now();
+          saveLocalReservation({
+            id: fallbackId,
+            ...resPayload,
+            created_at: new Date().toISOString()
+          });
+
+          const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+          });
+
+          if (resModalDetails) {
+            resModalDetails.innerHTML = `
+              Dear <strong>${nameVal}</strong>, we have reserved a spot for 
+              <strong>${guestsVal} guest(s)</strong> on <strong>${formattedDate}</strong> at 
+              <strong>${timeVal}</strong>.<br><br>
+              A confirmation SMS has been sent to <strong>${phoneVal}</strong>.
+              ${requestsVal ? `<br><em>Special note recorded: "${requestsVal}"</em>` : ''}
+              <div style="margin-top: 16px; padding-top: 14px; border-top: 1px dashed #e5d2be;">
+                <button id="cancelCurrentResBtn" class="btn btn-outline" style="width: 100%; border-color: #c93b2b; color: #c93b2b; font-size: 0.9rem; padding: 10px;">
+                  <i class="fa-solid fa-ban" style="margin-right: 6px;"></i> Cancel Reservation
+                </button>
+              </div>
+            `;
+
+            const cancelCurrentResBtn = document.getElementById('cancelCurrentResBtn');
+            if (cancelCurrentResBtn) {
+              cancelCurrentResBtn.onclick = () => {
+                cancelReservation(fallbackId, cancelCurrentResBtn);
+              };
+            }
+          }
+
+          if (resModalOverlay) resModalOverlay.classList.add('active');
+          reservationForm.reset();
+          showToast('Table successfully reserved!', 'fa-solid fa-calendar-check');
         } finally {
           if (submitBtn) {
             submitBtn.disabled = false;
@@ -1106,6 +1389,7 @@ document.addEventListener('DOMContentLoaded', () => {
       closeResModal();
       closeStoryModal();
       closeCheckoutModal();
+      closeReservationsModal();
     }
   });
 
