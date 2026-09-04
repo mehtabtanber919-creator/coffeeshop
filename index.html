@@ -788,13 +788,13 @@
               </p>
             </div>
 
-            <form id="reservationForm" class="reservation-form" novalidate>
+            <form id="reservationForm" class="reservation-form" novalidate autocomplete="off">
               <div class="form-row">
                 <div class="form-group">
                   <label for="resName">Full Name <span class="req">*</span></label>
                   <div class="input-with-icon">
                     <i class="fa-solid fa-user"></i>
-                    <input type="text" id="resName" name="name" placeholder="e.g. Danny Ross" required>
+                    <input type="text" id="resName" name="name" placeholder="e.g. Danny Ross" autocomplete="off" required>
                   </div>
                   <span class="error-msg" id="resNameError"></span>
                 </div>
@@ -803,7 +803,7 @@
                   <label for="resPhone">Phone Number <span class="req">*</span></label>
                   <div class="input-with-icon">
                     <i class="fa-solid fa-phone"></i>
-                    <input type="tel" id="resPhone" name="phone" placeholder="e.g. +91 98765 43210" required>
+                    <input type="tel" id="resPhone" name="phone" placeholder="e.g. +91 98765 43210" autocomplete="off" required>
                   </div>
                   <span class="error-msg" id="resPhoneError"></span>
                 </div>
