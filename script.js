@@ -124,6 +124,67 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(list));
   }
 
+  function updateLocalOrderStatus(orderIdOrNumber, newStatus) {
+    const list = getLocalOrders();
+    const item = list.find(o => o.id === orderIdOrNumber || o.order_number === orderIdOrNumber);
+    if (item) {
+      item.status = newStatus;
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(list));
+    }
+  }
+
+  async function cancelOrder(orderIdOrNumber, orderNumber, btnEl) {
+    if (!orderIdOrNumber && !orderNumber) return;
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Cancelling...`;
+    }
+
+    const user = getLoggedInUser();
+    const token = user?.session?.access_token;
+
+    try {
+      await fetch(getApiUrl('/api/orders/cancel'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({
+          id: orderIdOrNumber,
+          order_number: orderNumber || orderIdOrNumber
+        })
+      });
+    } catch (err) {
+      console.warn('Network error cancelling order:', err);
+    }
+
+    updateLocalOrderStatus(orderIdOrNumber || orderNumber, 'Cancelled');
+
+    if (btnEl) {
+      btnEl.disabled = true;
+      btnEl.style.opacity = '0.7';
+      btnEl.style.borderColor = '#aaa';
+      btnEl.style.color = '#777';
+      btnEl.style.cursor = 'not-allowed';
+      btnEl.innerHTML = `<i class="fa-solid fa-ban" style="margin-right: 6px;"></i> Order Cancelled`;
+    }
+
+    const parentCard = btnEl ? btnEl.closest('.order-card-item') : null;
+    if (parentCard) {
+      const badge = parentCard.querySelector('.order-status-badge');
+      if (badge) {
+        badge.style.background = '#c93b2b15';
+        badge.style.color = '#c93b2b';
+        badge.style.borderColor = '#c93b2b40';
+        badge.innerHTML = `<i class="fa-solid fa-ban" style="margin-right: 4px;"></i> CANCELLED`;
+      }
+    }
+
+    showToast('Order cancelled successfully.', 'fa-solid fa-ban');
+  }
+
   async function fetchAndShowOrderHistory() {
     if (!orderHistoryModalOverlay || !orderHistoryContent) return;
 
@@ -229,17 +290,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }) : 'Recent';
 
       const status = ord.status || 'Completed';
-      const statusColor = status.toLowerCase() === 'completed' ? '#27ae60' : '#d9a362';
+      const isCancelled = status.toLowerCase() === 'cancelled';
+      const statusText = isCancelled ? 'CANCELLED' : status.toUpperCase();
+      const statusColor = isCancelled ? '#c93b2b' : (status.toLowerCase() === 'completed' ? '#27ae60' : '#d9a362');
+      const statusIcon = isCancelled ? 'fa-solid fa-ban' : 'fa-solid fa-circle-check';
+      const targetId = ord.id || ord.order_number || '';
 
       return `
-        <div style="background: var(--cream); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+        <div class="order-card-item" style="background: var(--cream); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e5d2be; padding-bottom: 10px; margin-bottom: 10px;">
             <div>
               <strong style="font-size: 0.95rem; color: var(--coffee-brown); font-family: 'Playfair Display', serif;">${ord.order_number || '#BB-ORDER'}</strong>
               <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i>${dateStr}</div>
             </div>
-            <span style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor}40; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
-              <i class="fa-solid fa-circle-check" style="margin-right: 4px;"></i>${status}
+            <span class="order-status-badge" style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor}40; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="${statusIcon}" style="margin-right: 4px;"></i>${statusText}
             </span>
           </div>
 
@@ -256,9 +321,25 @@ document.addEventListener('DOMContentLoaded', () => {
             <span style="color: var(--text-muted); font-size: 0.82rem;">Total Amount Paid</span>
             <strong style="font-size: 1.05rem; color: var(--coffee-brown);">₹${ord.total_amount || 0}</strong>
           </div>
+
+          ${!isCancelled && targetId ? `
+            <div style="border-top: 1px dashed #e5d2be; padding-top: 10px; margin-top: 8px; text-align: right;">
+              <button class="cancel-order-btn btn btn-outline" data-id="${targetId}" data-ordnum="${ord.order_number || ''}" style="padding: 6px 14px; font-size: 0.82rem; border-color: #c93b2b; color: #c93b2b;">
+                <i class="fa-solid fa-ban" style="margin-right: 4px;"></i> Cancel Order
+              </button>
+            </div>
+          ` : ''}
         </div>
       `;
     }).join('');
+
+    orderHistoryContent.querySelectorAll('.cancel-order-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const num = btn.dataset.ordnum;
+        cancelOrder(id, num, btn);
+      });
+    });
   }
 
   function closeOrderHistoryModal() {
@@ -847,9 +928,22 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Total Paid</span>
           <span>₹${finalAmount}</span>
         </div>
+        <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #e5d2be;">
+          <button id="cancelPlacedOrderBtn" class="btn btn-outline" style="width: 100%; border-color: #c93b2b; color: #c93b2b; font-size: 0.88rem; padding: 8px;">
+            <i class="fa-solid fa-ban" style="margin-right: 6px;"></i> Cancel Order
+          </button>
+        </div>
       `;
 
-      if (receiptSummary) receiptSummary.innerHTML = receiptHTML;
+      if (receiptSummary) {
+        receiptSummary.innerHTML = receiptHTML;
+        const cancelPlacedOrderBtn = document.getElementById('cancelPlacedOrderBtn');
+        if (cancelPlacedOrderBtn) {
+          cancelPlacedOrderBtn.onclick = () => {
+            cancelOrder(orderId, orderId, cancelPlacedOrderBtn);
+          };
+        }
+      }
 
       // Save order to Supabase Backend & Local Storage Cache
       const user = getLoggedInUser();
