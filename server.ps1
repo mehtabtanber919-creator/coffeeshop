@@ -430,7 +430,9 @@ function Invoke-OrdersApi {
             total_amount = $totalAmount
             status = $status
         }
-        if ($userId) { $orderPayload["user_id"] = $userId }
+        if ($userId -and $userId -match '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$') {
+            $orderPayload["user_id"] = $userId
+        }
         if ($data.customer_name) { $orderPayload["customer_name"] = $data.customer_name }
         if ($data.customer_email) { $orderPayload["customer_email"] = $data.customer_email }
         if ($data.customer_phone) { $orderPayload["customer_phone"] = $data.customer_phone }
@@ -453,6 +455,20 @@ function Invoke-OrdersApi {
             $response.Close()
             return
         } catch {
+            if ($orderPayload.ContainsKey("user_id")) {
+                $orderPayload.Remove("user_id")
+                $fallbackJson = $orderPayload | ConvertTo-Json -Depth 5
+                try {
+                    $createdOrder = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/orders" -Headers $reqHeaders -Method Post -Body $fallbackJson -ContentType "application/json" -ErrorAction Stop
+                    $response.StatusCode = 200
+                    $response.ContentType = "application/json; charset=utf-8"
+                    $respJson = @{ success = $true; order = $createdOrder } | ConvertTo-Json -Depth 5
+                    $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+                    $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+                    $response.Close()
+                    return
+                } catch {}
+            }
             $errMsg = $_.Exception.Message
             $response.StatusCode = 400
             $response.ContentType = "application/json; charset=utf-8"
@@ -562,7 +578,9 @@ function Invoke-ReservationsApi {
             special_request = if ($specialRequest) { $specialRequest } else { "" }
             status = $status
         }
-        if ($userId) { $resPayload["user_id"] = $userId }
+        if ($userId -and $userId -match '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$') {
+            $resPayload["user_id"] = $userId
+        }
 
         $resJson = $resPayload | ConvertTo-Json -Depth 5
 
@@ -582,6 +600,20 @@ function Invoke-ReservationsApi {
             $response.Close()
             return
         } catch {
+            if ($resPayload.ContainsKey("user_id")) {
+                $resPayload.Remove("user_id")
+                $fallbackJson = $resPayload | ConvertTo-Json -Depth 5
+                try {
+                    $createdRes = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/reservations" -Headers $reqHeaders -Method Post -Body $fallbackJson -ContentType "application/json" -ErrorAction Stop
+                    $response.StatusCode = 200
+                    $response.ContentType = "application/json; charset=utf-8"
+                    $respJson = @{ success = $true; reservation = $createdRes } | ConvertTo-Json -Depth 5
+                    $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+                    $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+                    $response.Close()
+                    return
+                } catch {}
+            }
             $errMsg = $_.Exception.Message
             $response.StatusCode = 400
             $response.ContentType = "application/json; charset=utf-8"
