@@ -203,56 +203,62 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    let orders = [];
-    let isError = false;
+    let serverOrders = [];
 
-    if (user && user.id) {
-      try {
-        const token = user.session?.access_token;
-        const res = await fetch(getApiUrl(`/api/orders/list?user_id=${encodeURIComponent(user.id)}`), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token ? `Bearer ${token}` : ''
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.orders && Array.isArray(data.orders)) {
-            orders = data.orders;
-          }
-        } else {
-          isError = true;
+    try {
+      const token = user?.session?.access_token;
+      const fetchPath = (user && user.id) ? `/api/orders/list?user_id=${encodeURIComponent(user.id)}` : '/api/orders/list';
+      const res = await fetch(getApiUrl(fetchPath), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
         }
-      } catch (err) {
-        console.warn('Failed to fetch orders from server:', err);
-        isError = true;
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.orders) {
+          serverOrders = Array.isArray(data.orders) ? data.orders : (data.orders.value || []);
+        }
       }
+    } catch (err) {
+      console.warn('Failed to fetch orders from server:', err);
     }
 
-    // Fallback to local storage cache if server fails or user is offline
-    if (orders.length === 0 && (!user || isError)) {
-      const localList = getLocalOrders();
-      if (user && user.id) {
-        orders = localList.filter(o => o.user_id === user.id);
-      } else {
-        orders = localList;
-      }
+    // Merge server orders and local storage cache so NO order is ever missing
+    const localList = getLocalOrders();
+    const orderMap = new Map();
+
+    // 1. Add server orders
+    if (Array.isArray(serverOrders)) {
+      serverOrders.forEach(o => {
+        const key = o.order_number || o.id;
+        if (key) orderMap.set(key, o);
+      });
     }
 
-    // 2. Error State
-    if (isError && orders.length === 0) {
-      orderHistoryContent.innerHTML = `
-        <div style="text-align: center; padding: 2.5rem 1rem; color: #735D54;">
-          <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.2rem; color: #c93b2b; margin-bottom: 0.8rem;"></i>
-          <p style="font-weight: 600; color: #21120D; margin-bottom: 0.4rem;">Unable to load order history</p>
-          <p style="font-size: 0.85rem; margin-bottom: 1.2rem;">Please check your connection and try again.</p>
-          <button id="retryOrdersBtn" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> Retry</button>
-        </div>
-      `;
-      const retryBtn = document.getElementById('retryOrdersBtn');
-      if (retryBtn) retryBtn.onclick = fetchAndShowOrderHistory;
-      return;
+    // 2. Add local orders
+    if (Array.isArray(localList)) {
+      localList.forEach(o => {
+        const key = o.order_number || o.id;
+        if (key) {
+          if (!orderMap.has(key)) {
+            orderMap.set(key, o);
+          } else {
+            const existing = orderMap.get(key);
+            if (o.status && o.status.toLowerCase() === 'cancelled') {
+              existing.status = 'Cancelled';
+            }
+          }
+        }
+      });
+    }
+
+    let orders = Array.from(orderMap.values());
+
+    // Filter by user if logged in with valid ID
+    if (user && user.id) {
+      orders = orders.filter(o => !o.user_id || o.user_id === user.id || (user.email && o.customer_email === user.email));
     }
 
     // 3. Empty History State
@@ -452,40 +458,58 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    let reservations = [];
-    let isError = false;
+    let serverReservations = [];
 
-    if (user && user.id) {
-      try {
-        const token = user.session?.access_token;
-        const res = await fetch(getApiUrl(`/api/reservations/list?user_id=${encodeURIComponent(user.id)}`), {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token ? `Bearer ${token}` : ''
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.reservations && Array.isArray(data.reservations)) {
-            reservations = data.reservations;
-          }
-        } else {
-          isError = true;
+    try {
+      const token = user?.session?.access_token;
+      const fetchPath = (user && user.id) ? `/api/reservations/list?user_id=${encodeURIComponent(user.id)}` : '/api/reservations/list';
+      const res = await fetch(getApiUrl(fetchPath), {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
         }
-      } catch (err) {
-        console.warn('Failed to fetch reservations from server:', err);
-        isError = true;
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.reservations) {
+          serverReservations = Array.isArray(data.reservations) ? data.reservations : (data.reservations.value || []);
+        }
       }
+    } catch (err) {
+      console.warn('Failed to fetch reservations from server:', err);
     }
 
-    if (reservations.length === 0) {
-      const localList = getLocalReservations();
-      if (user && user.id) {
-        reservations = localList.filter(r => r.user_id === user.id);
-      } else {
-        reservations = localList;
-      }
+    const localList = getLocalReservations();
+    const resMap = new Map();
+
+    if (Array.isArray(serverReservations)) {
+      serverReservations.forEach(r => {
+        const key = r.id || (r.name + '_' + r.reservation_date + '_' + r.reservation_time);
+        if (key) resMap.set(key, r);
+      });
+    }
+
+    if (Array.isArray(localList)) {
+      localList.forEach(r => {
+        const key = r.id || (r.name + '_' + r.reservation_date + '_' + r.reservation_time);
+        if (key) {
+          if (!resMap.has(key)) {
+            resMap.set(key, r);
+          } else {
+            const existing = resMap.get(key);
+            if (r.status && r.status.toLowerCase() === 'cancelled') {
+              existing.status = 'Cancelled';
+            }
+          }
+        }
+      });
+    }
+
+    let reservations = Array.from(resMap.values());
+
+    if (user && user.id) {
+      reservations = reservations.filter(r => !r.user_id || r.user_id === user.id);
     }
 
     if (reservations.length === 0) {
