@@ -377,6 +377,125 @@ function Invoke-AuthApi {
     }
 }
 
+function Invoke-OrdersApi {
+    param(
+        [System.Net.HttpListenerContext]$context,
+        [string]$subPath
+    )
+    $request = $context.Request
+    $response = $context.Response
+
+    $response.AddHeader("Access-Control-Allow-Origin", "*")
+    $response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    $response.AddHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+
+    if ($request.HttpMethod -eq "OPTIONS") {
+        $response.StatusCode = 200
+        $response.Close()
+        return
+    }
+
+    $supabaseUrl = [System.Environment]::GetEnvironmentVariable("SUPABASE_URL")
+    $supabaseAnonKey = [System.Environment]::GetEnvironmentVariable("SUPABASE_ANON_KEY")
+    if (-not $supabaseUrl) { $supabaseUrl = "https://tgrbmkrjkaflhzysobdy.supabase.co" }
+
+    $authAuthHeader = $request.Headers["Authorization"]
+
+    # 1. CREATE ORDER (/api/orders/create)
+    if ($subPath -eq "create") {
+        $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+        $bodyText = $reader.ReadToEnd()
+        $reader.Close()
+
+        $data = @{}
+        if (-not [string]::IsNullOrWhiteSpace($bodyText)) {
+            try { $data = $bodyText | ConvertFrom-Json } catch {}
+        }
+
+        $orderNumber = $data.order_number
+        $userId = $data.user_id
+        $items = $data.items
+        $subtotal = $data.subtotal
+        $tax = $data.tax
+        $totalAmount = $data.total_amount
+        $status = $data.status
+        if (-not $status) { $status = "Completed" }
+
+        $orderPayload = @{
+            order_number = $orderNumber
+            items = $items
+            subtotal = $subtotal
+            tax = $tax
+            total_amount = $totalAmount
+            status = $status
+        }
+        if ($userId) {
+            $orderPayload["user_id"] = $userId
+        }
+
+        $orderJson = $orderPayload | ConvertTo-Json -Depth 5
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = if ($authAuthHeader) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
+            "Prefer" = "return=representation"
+        }
+
+        try {
+            $createdOrder = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/orders" -Headers $reqHeaders -Method Post -Body $orderJson -ContentType "application/json" -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; order = $createdOrder } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $errMsg = $_.Exception.Message
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errJson = @{ error = "Failed to save order to database."; details = $errMsg } | ConvertTo-Json
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes($errJson)
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
+
+    # 2. LIST ORDERS (/api/orders/list)
+    if ($subPath -eq "list") {
+        $userId = $request.QueryString["user_id"]
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = if ($authAuthHeader) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
+        }
+
+        $fetchUri = "$supabaseUrl/rest/v1/orders?order=created_at.desc"
+        if ($userId) {
+            $fetchUri = "$supabaseUrl/rest/v1/orders?user_id=eq.$userId&order=created_at.desc"
+        }
+
+        try {
+            $orders = Invoke-RestMethod -Uri $fetchUri -Headers $reqHeaders -Method Get -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; orders = $orders } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Failed to fetch order history."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
+}
+
 $listener = New-Object System.Net.HttpListener
 $prefix = "http://localhost:$port/"
 $listener.Prefixes.Add($prefix)
@@ -432,6 +551,13 @@ while ($listener.IsListening) {
         if ($urlPath.StartsWith("api/auth/")) {
             $subPath = $urlPath.Substring("api/auth/".Length).TrimEnd('/')
             Invoke-AuthApi -context $context -subPath $subPath
+            continue
+        }
+
+        # Check for Supabase Order Endpoints
+        if ($urlPath.StartsWith("api/orders/")) {
+            $subPath = $urlPath.Substring("api/orders/".Length).TrimEnd('/')
+            Invoke-OrdersApi -context $context -subPath $subPath
             continue
         }
 
