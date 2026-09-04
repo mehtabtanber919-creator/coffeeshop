@@ -2809,12 +2809,12 @@ h1, h2, h3, h4, h5, h6 {
     /* Mobile Nav Drawer */
     .nav-menu {
       position: fixed;
-      top: 76px;
+      top: 72px;
       left: 0;
       width: 100%;
-      height: calc(100vh - 76px);
+      height: calc(100vh - 72px);
       background-color: var(--cream);
-      padding: 2.5rem 2rem;
+      padding: 2.2rem 1.8rem;
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
@@ -2822,6 +2822,7 @@ h1, h2, h3, h4, h5, h6 {
       overflow-y: auto;
       border-bottom: 2px solid var(--border-color);
       box-shadow: var(--shadow-lg);
+      z-index: 9999;
     }
 
     .nav-menu.active {
@@ -2837,7 +2838,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .nav-link {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-family: var(--font-heading);
       width: 100%;
       display: block;
@@ -2848,6 +2849,7 @@ h1, h2, h3, h4, h5, h6 {
     .hero-container {
       grid-template-columns: 1fr;
       text-align: center;
+      gap: 2.5rem;
     }
 
     .hero-subtitle {
@@ -2864,7 +2866,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .hero-visual {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
     }
 
     .todays-pick-card {
@@ -2875,7 +2877,7 @@ h1, h2, h3, h4, h5, h6 {
     /* About layout */
     .about-container {
       grid-template-columns: 1fr;
-      gap: 3rem;
+      gap: 2.5rem;
     }
 
     .about-visual {
@@ -2886,7 +2888,7 @@ h1, h2, h3, h4, h5, h6 {
     /* Offer Banner */
     .offer-banner {
       grid-template-columns: 1fr;
-      padding: 2.5rem 2rem;
+      padding: 2.2rem 1.6rem;
       text-align: center;
     }
 
@@ -2909,7 +2911,7 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .reservation-visual {
-      min-height: 260px;
+      min-height: 220px;
     }
 
     .res-img {
@@ -2931,6 +2933,7 @@ h1, h2, h3, h4, h5, h6 {
     /* Products Grid */
     .products-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
     }
 
     /* Gallery Grid */
@@ -2944,7 +2947,7 @@ h1, h2, h3, h4, h5, h6 {
     /* Footer Grid */
     .footer-grid {
       grid-template-columns: 1fr;
-      gap: 2.5rem;
+      gap: 2.2rem;
     }
     .footer-col:last-child {
       grid-column: span 1;
@@ -2954,35 +2957,59 @@ h1, h2, h3, h4, h5, h6 {
   /* Small Mobile Devices (max-width: 600px) */
   @media (max-width: 600px) {
     .section {
-      padding: 3.8rem 0;
+      padding: 3.2rem 0;
+    }
+
+    .container {
+      padding: 0 1.1rem;
+    }
+
+    .logo-text .brand-subtitle {
+      display: none;
+    }
+
+    .nav-actions {
+      gap: 0.4rem;
     }
 
     .signup-btn-text {
       display: inline;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 700;
     }
 
     .nav-signup-btn {
-      padding: 0.45rem 0.85rem;
-      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      gap: 0.3rem;
     }
 
     .section-title {
-      font-size: 2rem;
+      font-size: 1.85rem;
     }
 
     .hero-title {
-      font-size: 2.4rem;
+      font-size: 2.15rem;
+      line-height: 1.25;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .hero-buttons .btn {
+      width: 100%;
+      justify-content: center;
     }
 
     .hero-img {
-      height: 380px;
+      height: 320px;
     }
 
     .todays-pick-card {
-      position: static;
-      margin-top: 1.5rem;
+      position: relative;
+      inset: auto;
+      margin-top: 1.2rem;
       max-width: 100%;
     }
 
@@ -2994,12 +3021,36 @@ h1, h2, h3, h4, h5, h6 {
       grid-template-columns: 1fr;
     }
 
+    .menu-filters {
+      justify-content: flex-start;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      padding-bottom: 0.6rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .filter-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
     .form-row {
       grid-template-columns: 1fr;
     }
 
+    /* Prevent iOS zoom on input focus */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-size: 16px !important;
+    }
+
     .reservation-card {
-      padding: 2rem 1.4rem;
+      padding: 1.6rem 1.1rem;
+    }
+
+    .reservation-visual {
+      display: none;
     }
 
     .about-stats {
@@ -3014,15 +3065,54 @@ h1, h2, h3, h4, h5, h6 {
     }
 
     .offer-title {
-      font-size: 2.1rem;
+      font-size: 1.85rem;
     }
 
     .price-current {
-      font-size: 2.3rem;
+      font-size: 2.1rem;
     }
 
     .cart-drawer {
+      width: 100%;
       max-width: 100%;
+      padding: 1.25rem 1rem;
+    }
+
+    /* Modals on Mobile */
+    .modal-card,
+    .story-modal-card,
+    .auth-modal-card,
+    .order-history-modal-card,
+    .reservations-modal-card,
+    .user-profile-card {
+      max-width: 94% !important;
+      width: 94% !important;
+      padding: 1.4rem 1.1rem !important;
+      max-height: 88vh !important;
+      overflow-y: auto !important;
+      margin: auto !important;
+      border-radius: 16px !important;
+    }
+
+    .modal-actions {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-actions .btn {
+      width: 100%;
+    }
+
+    .toast-container {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      width: auto;
+    }
+
+    .toast {
+      max-width: 100%;
+      font-size: 0.85rem;
     }
 
     .newsletter-input-group {
@@ -3035,6 +3125,7 @@ h1, h2, h3, h4, h5, h6 {
       width: 100%;
       padding: 0.6rem 0;
       text-align: center;
+      font-size: 16px !important;
     }
 
     .newsletter-input-group button {
@@ -3044,6 +3135,26 @@ h1, h2, h3, h4, h5, h6 {
     .footer-bottom {
       flex-direction: column;
       text-align: center;
+      gap: 0.75rem;
+    }
+  }
+
+  /* Extra Small Phones (max-width: 380px) */
+  @media (max-width: 380px) {
+    .brand-title {
+      font-size: 1.15rem;
+    }
+
+    .hero-title {
+      font-size: 1.9rem;
+    }
+
+    .section-title {
+      font-size: 1.65rem;
+    }
+
+    .modal-card {
+      padding: 1.2rem 0.9rem !important;
     }
   }
 }
