@@ -821,6 +821,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Backdrop click & Escape key listener for all modal overlays
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('active')) {
+      e.target.classList.remove('active');
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+      const cartDrawer = document.getElementById('cartDrawer');
+      const cartOverlay = document.getElementById('cartOverlay');
+      if (cartDrawer) cartDrawer.classList.remove('active');
+      if (cartOverlay) cartOverlay.classList.remove('active');
+    }
+  });
+
   // Active section indicator on scroll
   const sections = document.querySelectorAll('section[id]');
   function highlightCurrentNav() {
