@@ -512,6 +512,66 @@ function Invoke-OrdersApi {
             return
         }
     }
+
+    # 3. CANCEL ORDER (/api/orders/cancel)
+    if ($subPath -eq "cancel") {
+        $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+        $bodyText = $reader.ReadToEnd()
+        $reader.Close()
+
+        $data = @{}
+        if (-not [string]::IsNullOrWhiteSpace($bodyText)) {
+            try { $data = $bodyText | ConvertFrom-Json } catch {}
+        }
+
+        $ordId = $data.id
+        if (-not $ordId) { $ordId = $data.order_id }
+        $orderNumber = $data.order_number
+
+        if ([string]::IsNullOrWhiteSpace($ordId) -and [string]::IsNullOrWhiteSpace($orderNumber)) {
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Order ID or Order Number is required."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = $effectiveAuth
+            "Prefer" = "return=representation"
+        }
+
+        $cancelPayload = @{ status = "Cancelled" } | ConvertTo-Json
+
+        $targetUri = if ($ordId -and $ordId -match '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$') {
+            "$supabaseUrl/rest/v1/orders?id=eq.$ordId"
+        } else {
+            $numToUse = if ($orderNumber) { $orderNumber } else { $ordId }
+            "$supabaseUrl/rest/v1/orders?order_number=eq.$numToUse"
+        }
+
+        try {
+            $updatedOrder = Invoke-RestMethod -Uri $targetUri -Headers $reqHeaders -Method Patch -Body $cancelPayload -ContentType "application/json" -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; message = "Order cancelled successfully"; order = $updatedOrder } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $errMsg = $_.Exception.Message
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errJson = @{ error = "Failed to cancel order in database."; details = $errMsg } | ConvertTo-Json
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes($errJson)
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
 }
 
 function Invoke-ReservationsApi {
