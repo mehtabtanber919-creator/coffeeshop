@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Portal | Brew &amp; Bean Specialty Coffee Co.</title>
+  <meta name="description" content="Sign in or join the Brew & Bean Coffee Club to earn rewards, get 15% off your first order, and enjoy exclusive member privileges.">
+
+  <!-- Google Fonts: Playfair Display & DM Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Auth Stylesheet -->
+  <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+  <!-- Background Ambience & Lighting -->
+  <div class="auth-bg-wrapper">
+    <div class="auth-bg-overlay"></div>
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+  </div>
+
+  <div class="auth-page-container">
+    
+    <!-- Header Bar with Back to Home & Logo -->
+    <header class="auth-top-nav">
+      <a href="index.html" class="back-home-btn" aria-label="Return to Homepage">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Home</span>
+      </a>
+
+      <a href="index.html" class="auth-brand-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-mug-saucer"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-title">Brew &amp; Bean</span>
+          <span class="brand-subtitle">Specialty Coffee Co.</span>
+        </div>
+      </a>
+
+      <div class="auth-help-link">
+        <span>Need help?</span>
+        <a href="index.html#contact">Contact Café</a>
+      </div>
+    </header>
+
+    <!-- Main Authentication Box -->
+    <main class="auth-main-content">
+      <div class="auth-card">
+        
+        <!-- Centered Brew & Bean Brand Header -->
+        <div class="auth-card-brand text-center">
+          <a href="index.html" class="card-brand-link">
+            <div class="logo-icon card-logo-icon">
+              <i class="fa-solid fa-mug-saucer"></i>
+            </div>
+            <span class="brand-title">Brew &amp; Bean</span>
+          </a>
+        </div>
+
+        <!-- Member Perk Badge -->
+        <div class="auth-header text-center">
+          <span class="club-badge">
+            <i class="fa-solid fa-crown"></i> Exclusive Member Perks
+          </span>
+          <h1 class="auth-title" id="authTitle">Welcome to Brew &amp; Bean</h1>
+          <p class="auth-subtitle" id="authSubtitle">
+            Sign in to your account or join the club for 15% off your next cup.
+          </p>
+        </div>
+
+        <!-- Tab Toggle Switcher -->
+        <div class="auth-tabs" role="tablist" aria-label="Authentication Switcher">
+          <div class="tab-indicator" id="tabIndicator"></div>
+          <button type="button" class="tab-btn active" id="tabLogin" role="tab" aria-selected="true" aria-controls="loginPanel">
+            <i class="fa-solid fa-right-to-bracket"></i> Login
+          </button>
+          <button type="button" class="tab-btn" id="tabSignUp" role="tab" aria-selected="false" aria-controls="signUpPanel">
+            <i class="fa-solid fa-user-plus"></i> Sign Up
+          </button>
+        </div>
+
+        <!-- Social Login Buttons -->
+        <div class="social-auth-section">
+          <div class="social-buttons-grid">
+            <button type="button" class="btn-social google-btn" id="googleLoginBtn">
+              <i class="fa-brands fa-google"></i>
+              <span>Google</span>
+            </button>
+            <button type="button" class="btn-social facebook-btn" id="facebookLoginBtn">
+              <i class="fa-brands fa-facebook-f"></i>
+              <span>Facebook</span>
+            </button>
+          </div>
+          
+          <div class="auth-divider">
+            <span>or continue with email</span>
+          </div>
+        </div>
+
+        <!-- Forms Container (Animated Slider) -->
+        <div class="forms-slider-container">
+          <div class="forms-slider" id="formsSlider">
+            
+            <!-- 1. LOGIN FORM PANEL -->
+            <div class="form-panel active" id="loginPanel" role="tabpanel" aria-labelledby="tabLogin">
+              <form id="loginForm" class="auth-form" novalidate>
+                
+                <div class="form-group">
+                  <label for="loginEmail">Email Address</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope input-icon"></i>
+                    <input type="email" id="loginEmail" name="email" placeholder="name@example.com" autocomplete="email" required>
+                  </div>
+                  <span class="field-error" id="loginEmailError"></span>
+                </div>
+
+                <div class="form-group">
+                  <div class="label-row">
+                    <label for="loginPassword">Password</label>
+                    <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
+                  </div>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-lock input-icon"></i>
+                    <input type="password" id="loginPassword" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+                    <button type="button" class="toggle-password-btn" data-target="loginPassword" aria-label="Toggle password visibility">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                  <span class="field-error" id="loginPasswordError"></span>
+                </div>
+
+                <div class="form-options">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <span class="checkbox-box"></span>
+                    <span class="checkbox-text">Remember me for 30 days</span>
+                  </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitLoginBtn">
+                  <span>Login</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <div class="form-switch-prompt">
+                  <span>Don't have an account yet?</span>
+                  <button type="button" class="switch-link" id="switchToSignUp">Sign Up Free</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- 2. SIGN UP FORM PANEL -->
+            <div class="form-panel" id="signUpPanel" role="tabpanel" aria-labelledby="tabSignUp">
+              <form id="signUpForm" class="auth-form" novalidate>
+                
+                <div class="form-group">
+                  <label for="regFullName">Full Name <span class="req">*</span></label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-user input-icon"></i>
+                    <input type="text" id="regFullName" name="fullname" placeholder="e.g. Danny Ross" autocomplete="name" required>
+                  </div>
+                  <span class="field-error" id="regFullNameError"></span>
+                </div>
+
+                <div class="form-row-2col">
+                  <div class="form-group">
+                    <label for="regEmail">Email Address <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-envelope input-icon"></i>
+                      <input type="email" id="regEmail" name="email" placeholder="name@example.com" autocomplete="email" required>
+                    </div>
+                    <span class="field-error" id="regEmailError"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="regPhone">Phone Number <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-phone input-icon"></i>
+                      <input type="tel" id="regPhone" name="phone" placeholder="+91 98765 43210" autocomplete="tel" required>
+                    </div>
+                    <span class="field-error" id="regPhoneError"></span>
+                  </div>
+                </div>
+
+                <div class="form-row-2col">
+                  <div class="form-group">
+                    <label for="regPassword">Password <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-lock input-icon"></i>
+                      <input type="password" id="regPassword" name="password" placeholder="Min 6 characters" autocomplete="new-password" required>
+                      <button type="button" class="toggle-password-btn" data-target="regPassword" aria-label="Toggle password visibility">
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                    <span class="field-error" id="regPasswordError"></span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="regConfirmPassword">Confirm Password <span class="req">*</span></label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-shield-halved input-icon"></i>
+                      <input type="password" id="regConfirmPassword" name="confirmpassword" placeholder="Re-enter password" autocomplete="new-password" required>
+                      <button type="button" class="toggle-password-btn" data-target="regConfirmPassword" aria-label="Toggle password visibility">
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    </div>
+                    <span class="field-error" id="regConfirmPasswordError"></span>
+                  </div>
+                </div>
+
+                <div class="form-options">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="regTerms" checked required>
+                    <span class="checkbox-box"></span>
+                    <span class="checkbox-text">
+                      I agree to the <a href="index.html" class="inline-link">Terms of Service</a> &amp; want to receive secret roast discounts.
+                    </span>
+                  </label>
+                  <span class="field-error" id="regTermsError"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitSignUpBtn">
+                  <span>Create Account</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <div class="form-switch-prompt">
+                  <span>Already have an account?</span>
+                  <button type="button" class="switch-link" id="switchToLogin">Login</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Footer Guarantees -->
+        <div class="auth-card-footer">
+          <div class="guarantee-item">
+            <i class="fa-solid fa-lock"></i>
+            <span>256-Bit SSL Encrypted</span>
+          </div>
+          <div class="guarantee-divider">•</div>
+          <div class="guarantee-item">
+            <i class="fa-solid fa-mug-hot"></i>
+            <span>Zero Spam, Pure Coffee</span>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Simple Bottom Copyright -->
+    <footer class="auth-page-footer">
+      <p>Copyright &copy; 2026 Brew &amp; Bean Specialty Coffee Co. All rights reserved.</p>
+    </footer>
+
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="auth-modal-overlay" id="forgotModalOverlay">
+    <div class="auth-modal-card">
+      <button class="modal-close-btn" id="closeForgotModalBtn" aria-label="Close modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="modal-icon-header">
+        <i class="fa-solid fa-key"></i>
+      </div>
+      <h3 class="modal-title">Reset Your Password</h3>
+      <p class="modal-text">Enter your registered email address and we'll send you an instant reset link.</p>
+      
+      <form id="forgotPasswordForm" novalidate>
+        <div class="form-group text-left">
+          <label for="forgotEmail">Email Address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="forgotEmail" placeholder="name@example.com" required>
+          </div>
+          <span class="field-error" id="forgotEmailError"></span>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send Reset Link</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- JavaScript -->
+  <script src="auth.js"></script>
+</body>
+</html>
