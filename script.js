@@ -1,3 +1,4 @@
+
 /**
  * Brew & Bean - Artisanal Coffee & Bakery
  * Main JavaScript Engine
@@ -51,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const raw = localStorage.getItem(AUTH_STORAGE_KEY);
       if (raw) savedUser = JSON.parse(raw);
-    } catch (e) {}
+    } catch (e) { }
 
     if (savedUser && savedUser.isLoggedIn) {
       const displayName = savedUser.name || 'Member';
@@ -63,6 +64,12 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         showUserAccountModal(savedUser);
       };
+
+      // Auto-fill reservation form for logged in user
+      const resNameEl = document.getElementById('resName');
+      const resPhoneEl = document.getElementById('resPhone');
+      if (resNameEl && !resNameEl.value && savedUser.name) resNameEl.value = savedUser.name;
+      if (resPhoneEl && !resPhoneEl.value && savedUser.phone) resPhoneEl.value = savedUser.phone;
     } else {
       navSignUpBtn.innerHTML = `<i class="fa-solid fa-user-plus"></i> <span class="signup-btn-text">Sign Up</span>`;
       navSignUpBtn.href = 'auth.html#signup';
@@ -86,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parsed = JSON.parse(raw);
         if (parsed && parsed.isLoggedIn) return parsed;
       }
-    } catch (e) {}
+    } catch (e) { }
     return null;
   }
 
@@ -94,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
       if (raw) return JSON.parse(raw);
-    } catch (e) {}
+    } catch (e) { }
     return [];
   }
 
@@ -324,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Authorization': access_token ? `Bearer ${access_token}` : ''
           }
         });
-      } catch (e) {}
+      } catch (e) { }
 
       localStorage.removeItem(AUTH_STORAGE_KEY);
       closeModal();
@@ -586,7 +593,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const receiptHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom: 0.6rem; font-weight:700;">
           <span>Order ID: ${orderId}</span>
-          <span style="color:#B97841;">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          <span style="color:#B97841;">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
         </div>
         <ul style="border-top:1px solid #e5d2be; border-bottom:1px solid #e5d2be; padding: 0.5rem 0; margin-bottom: 0.6rem;">
           ${cart.map(i => `
@@ -617,6 +624,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const orderPayload = {
         order_number: orderId,
         user_id: user ? user.id : null,
+        customer_name: user ? (user.name || user.email) : 'Guest Customer',
+        customer_email: user ? (user.email || '') : '',
+        customer_phone: user ? (user.phone || '') : '',
         items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
         subtotal: subtotal,
         tax: tax,
@@ -639,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
           },
           body: JSON.stringify(orderPayload)
         }).catch(err => console.warn('Order background sync:', err));
-      } catch (e) {}
+      } catch (e) { }
 
       // Close drawer & open modal
       closeCart();
@@ -869,7 +879,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (reservationForm) {
-    reservationForm.addEventListener('submit', (e) => {
+    reservationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const nameVal = resName.value.trim();
@@ -880,7 +890,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const requestsVal = resRequests.value.trim();
 
       const isNameValid = validateField(
-        resName, 
+        resName,
         document.getElementById('resNameError'),
         nameVal.length >= 2,
         'Please enter your full name (at least 2 characters).'
@@ -908,27 +918,69 @@ document.addEventListener('DOMContentLoaded', () => {
       );
 
       if (isNameValid && isPhoneValid && isDateValid && isTimeValid) {
-        // Format booking details for modal
-        const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        });
-
-        if (resModalDetails) {
-          resModalDetails.innerHTML = `
-            Dear <strong>${nameVal}</strong>, we have reserved a spot for 
-            <strong>${guestsVal} guest(s)</strong> on <strong>${formattedDate}</strong> at 
-            <strong>${timeVal}</strong>.<br><br>
-            A confirmation SMS has been sent to <strong>${phoneVal}</strong>.
-            ${requestsVal ? `<br><em>Special note recorded: "${requestsVal}"</em>` : ''}
-          `;
+        const submitBtn = document.getElementById('submitReservationBtn');
+        const origBtnText = submitBtn ? submitBtn.innerHTML : '<i class="fa-solid fa-check"></i> Reserve My Table';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving Reservation...';
         }
 
-        if (resModalOverlay) resModalOverlay.classList.add('active');
-        reservationForm.reset();
-        showToast('Table successfully booked!', 'fa-solid fa-calendar-check');
+        const user = getLoggedInUser();
+        const resPayload = {
+          user_id: user ? user.id : null,
+          name: nameVal,
+          phone: phoneVal,
+          reservation_date: dateVal,
+          reservation_time: timeVal,
+          guests: guestsVal,
+          special_request: requestsVal,
+          status: 'Confirmed'
+        };
+
+        try {
+          const token = user?.session?.access_token;
+          const res = await fetch('/api/reservations/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token ? `Bearer ${token}` : ''
+            },
+            body: JSON.stringify(resPayload)
+          });
+
+          const data = await res.json();
+          if (res.ok && data.success) {
+            const formattedDate = new Date(dateVal).toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            });
+
+            if (resModalDetails) {
+              resModalDetails.innerHTML = `
+                Dear <strong>${nameVal}</strong>, we have reserved a spot for 
+                <strong>${guestsVal} guest(s)</strong> on <strong>${formattedDate}</strong> at 
+                <strong>${timeVal}</strong>.<br><br>
+                A confirmation SMS has been sent to <strong>${phoneVal}</strong>.
+                ${requestsVal ? `<br><em>Special note recorded: "${requestsVal}"</em>` : ''}
+              `;
+            }
+
+            if (resModalOverlay) resModalOverlay.classList.add('active');
+            reservationForm.reset();
+            showToast('Table successfully booked and saved to database!', 'fa-solid fa-calendar-check');
+          } else {
+            showToast(data.error || 'Failed to save table reservation. Please try again.', 'fa-solid fa-circle-exclamation');
+          }
+        } catch (err) {
+          showToast('Network error while saving table reservation. Please try again.', 'fa-solid fa-circle-exclamation');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origBtnText;
+          }
+        }
       }
     });
   }
