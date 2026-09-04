@@ -395,11 +395,12 @@ function Invoke-OrdersApi {
         return
     }
 
-    $supabaseUrl = [System.Environment]::GetEnvironmentVariable("SUPABASE_URL")
+    $token = [System.Environment]::GetEnvironmentVariable("SUPABASE_ACCESS_TOKEN")
     $supabaseAnonKey = [System.Environment]::GetEnvironmentVariable("SUPABASE_ANON_KEY")
     if (-not $supabaseUrl) { $supabaseUrl = "https://tgrbmkrjkaflhzysobdy.supabase.co" }
 
     $authAuthHeader = $request.Headers["Authorization"]
+    $effectiveAuth = if ($authAuthHeader -and $authAuthHeader.StartsWith("Bearer ") -and $authAuthHeader.Length -gt 15) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
 
     # 1. CREATE ORDER (/api/orders/create)
     if ($subPath -eq "create") {
@@ -429,15 +430,16 @@ function Invoke-OrdersApi {
             total_amount = $totalAmount
             status = $status
         }
-        if ($userId) {
-            $orderPayload["user_id"] = $userId
-        }
+        if ($userId) { $orderPayload["user_id"] = $userId }
+        if ($data.customer_name) { $orderPayload["customer_name"] = $data.customer_name }
+        if ($data.customer_email) { $orderPayload["customer_email"] = $data.customer_email }
+        if ($data.customer_phone) { $orderPayload["customer_phone"] = $data.customer_phone }
 
         $orderJson = $orderPayload | ConvertTo-Json -Depth 5
 
         $reqHeaders = @{
             "apikey" = $supabaseAnonKey
-            "Authorization" = if ($authAuthHeader) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
+            "Authorization" = $effectiveAuth
             "Prefer" = "return=representation"
         }
 
@@ -468,7 +470,7 @@ function Invoke-OrdersApi {
 
         $reqHeaders = @{
             "apikey" = $supabaseAnonKey
-            "Authorization" = if ($authAuthHeader) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
+            "Authorization" = $effectiveAuth
         }
 
         $fetchUri = "$supabaseUrl/rest/v1/orders?order=created_at.desc"
@@ -489,6 +491,135 @@ function Invoke-OrdersApi {
             $response.StatusCode = 400
             $response.ContentType = "application/json; charset=utf-8"
             $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Failed to fetch order history."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
+}
+
+function Invoke-ReservationsApi {
+    param(
+        [System.Net.HttpListenerContext]$context,
+        [string]$subPath
+    )
+    $request = $context.Request
+    $response = $context.Response
+
+    $response.AddHeader("Access-Control-Allow-Origin", "*")
+    $response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+    $response.AddHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+
+    if ($request.HttpMethod -eq "OPTIONS") {
+        $response.StatusCode = 200
+        $response.Close()
+        return
+    }
+
+    $supabaseUrl = [System.Environment]::GetEnvironmentVariable("SUPABASE_URL")
+    $supabaseAnonKey = [System.Environment]::GetEnvironmentVariable("SUPABASE_ANON_KEY")
+    if (-not $supabaseUrl) { $supabaseUrl = "https://tgrbmkrjkaflhzysobdy.supabase.co" }
+
+    $authAuthHeader = $request.Headers["Authorization"]
+    $effectiveAuth = if ($authAuthHeader -and $authAuthHeader.StartsWith("Bearer ") -and $authAuthHeader.Length -gt 15) { $authAuthHeader } else { "Bearer $supabaseAnonKey" }
+
+    # 1. CREATE RESERVATION (/api/reservations/create)
+    if ($subPath -eq "create") {
+        $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+        $bodyText = $reader.ReadToEnd()
+        $reader.Close()
+
+        $data = @{}
+        if (-not [string]::IsNullOrWhiteSpace($bodyText)) {
+            try { $data = $bodyText | ConvertFrom-Json } catch {}
+        }
+
+        $name = $data.name
+        $phone = $data.phone
+        $resDate = $data.reservation_date
+        $resTime = $data.reservation_time
+        $guests = $data.guests
+        $specialRequest = $data.special_request
+        $userId = $data.user_id
+        $status = $data.status
+        if (-not $status) { $status = "Confirmed" }
+
+        if ([string]::IsNullOrWhiteSpace($name) -or [string]::IsNullOrWhiteSpace($phone) -or [string]::IsNullOrWhiteSpace($resDate) -or [string]::IsNullOrWhiteSpace($resTime)) {
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Name, phone, reservation date, and time are required."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+
+        $resPayload = @{
+            name = $name
+            phone = $phone
+            reservation_date = $resDate
+            reservation_time = $resTime
+            guests = if ($guests) { $guests } else { "2" }
+            special_request = if ($specialRequest) { $specialRequest } else { "" }
+            status = $status
+        }
+        if ($userId) { $resPayload["user_id"] = $userId }
+
+        $resJson = $resPayload | ConvertTo-Json -Depth 5
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = $effectiveAuth
+            "Prefer" = "return=representation"
+        }
+
+        try {
+            $createdRes = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/reservations" -Headers $reqHeaders -Method Post -Body $resJson -ContentType "application/json" -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; reservation = $createdRes } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $errMsg = $_.Exception.Message
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errJson = @{ error = "Failed to save table reservation to database."; details = $errMsg } | ConvertTo-Json
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes($errJson)
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
+
+    # 2. LIST RESERVATIONS (/api/reservations/list)
+    if ($subPath -eq "list") {
+        $userId = $request.QueryString["user_id"]
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = $effectiveAuth
+        }
+
+        $fetchUri = "$supabaseUrl/rest/v1/reservations?order=created_at.desc"
+        if ($userId) {
+            $fetchUri = "$supabaseUrl/rest/v1/reservations?user_id=eq.$userId&order=created_at.desc"
+        }
+
+        try {
+            $reservations = Invoke-RestMethod -Uri $fetchUri -Headers $reqHeaders -Method Get -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; reservations = $reservations } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Failed to fetch reservation history."}')
             $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
             $response.Close()
             return
@@ -558,6 +689,13 @@ while ($listener.IsListening) {
         if ($urlPath.StartsWith("api/orders/")) {
             $subPath = $urlPath.Substring("api/orders/".Length).TrimEnd('/')
             Invoke-OrdersApi -context $context -subPath $subPath
+            continue
+        }
+
+        # Check for Supabase Reservation Endpoints
+        if ($urlPath.StartsWith("api/reservations/")) {
+            $subPath = $urlPath.Substring("api/reservations/".Length).TrimEnd('/')
+            Invoke-ReservationsApi -context $context -subPath $subPath
             continue
         }
 
