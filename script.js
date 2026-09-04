@@ -70,6 +70,190 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  /* ==========================================================================
+     0.2 Order History Engine (Supabase Backend Linked)
+     ========================================================================== */
+  const ORDERS_STORAGE_KEY = 'brew_and_bean_orders_v1';
+  const orderHistoryModalOverlay = document.getElementById('orderHistoryModalOverlay');
+  const closeOrderHistoryModalBtn = document.getElementById('closeOrderHistoryModalBtn');
+  const orderHistoryContent = document.getElementById('orderHistoryContent');
+  const viewHistoryFromCheckoutBtn = document.getElementById('viewHistoryFromCheckoutBtn');
+
+  function getLoggedInUser() {
+    try {
+      const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.isLoggedIn) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function getLocalOrders() {
+    try {
+      const raw = localStorage.getItem(ORDERS_STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return [];
+  }
+
+  function saveLocalOrder(order) {
+    const list = getLocalOrders();
+    list.unshift(order);
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  async function fetchAndShowOrderHistory() {
+    if (!orderHistoryModalOverlay || !orderHistoryContent) return;
+
+    orderHistoryModalOverlay.classList.add('active');
+    const user = getLoggedInUser();
+    const subTitle = document.getElementById('orderHistoryUserSub');
+    if (subTitle) {
+      subTitle.textContent = user ? `Orders for ${user.name || user.email}` : 'Your recent handcrafted coffee & bakery purchases';
+    }
+
+    // 1. Loading State
+    orderHistoryContent.innerHTML = `
+      <div style="text-align: center; padding: 2.5rem 1rem; color: #735D54;">
+        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2.2rem; color: #B97841; margin-bottom: 0.8rem;"></i>
+        <p style="font-weight: 500; color: #21120D;">Fetching your order history...</p>
+      </div>
+    `;
+
+    let orders = [];
+    let isError = false;
+
+    if (user && user.id) {
+      try {
+        const token = user.session?.access_token;
+        const res = await fetch(`/api/orders/list?user_id=${encodeURIComponent(user.id)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.orders && Array.isArray(data.orders)) {
+            orders = data.orders;
+          }
+        } else {
+          isError = true;
+        }
+      } catch (err) {
+        console.warn('Failed to fetch orders from server:', err);
+        isError = true;
+      }
+    }
+
+    // Fallback to local storage cache if server fails or user is offline
+    if (orders.length === 0 && (!user || isError)) {
+      const localList = getLocalOrders();
+      if (user && user.id) {
+        orders = localList.filter(o => o.user_id === user.id);
+      } else {
+        orders = localList;
+      }
+    }
+
+    // 2. Error State
+    if (isError && orders.length === 0) {
+      orderHistoryContent.innerHTML = `
+        <div style="text-align: center; padding: 2.5rem 1rem; color: #735D54;">
+          <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.2rem; color: #c93b2b; margin-bottom: 0.8rem;"></i>
+          <p style="font-weight: 600; color: #21120D; margin-bottom: 0.4rem;">Unable to load order history</p>
+          <p style="font-size: 0.85rem; margin-bottom: 1.2rem;">Please check your connection and try again.</p>
+          <button id="retryOrdersBtn" class="btn btn-outline" style="padding: 8px 18px; font-size: 0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> Retry</button>
+        </div>
+      `;
+      const retryBtn = document.getElementById('retryOrdersBtn');
+      if (retryBtn) retryBtn.onclick = fetchAndShowOrderHistory;
+      return;
+    }
+
+    // 3. Empty History State
+    if (orders.length === 0) {
+      orderHistoryContent.innerHTML = `
+        <div style="text-align: center; padding: 3rem 1rem; color: #735D54;">
+          <div style="width: 60px; height: 60px; margin: 0 auto 1rem; background: var(--cream); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--caramel);">
+            <i class="fa-solid fa-mug-hot"></i>
+          </div>
+          <h4 style="font-size: 1.2rem; color: var(--coffee-brown); margin-bottom: 0.4rem; font-family: 'Playfair Display', serif;">No Orders Yet</h4>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.2rem;">You haven't placed any orders with Brew &amp; Bean yet.</p>
+          <button id="browseMenuFromHistoryBtn" class="btn btn-primary" style="padding: 10px 24px;">Explore Menu</button>
+        </div>
+      `;
+      const browseBtn = document.getElementById('browseMenuFromHistoryBtn');
+      if (browseBtn) {
+        browseBtn.onclick = () => {
+          closeOrderHistoryModal();
+          const menuSection = document.getElementById('menu');
+          if (menuSection) menuSection.scrollIntoView({ behavior: 'smooth' });
+        };
+      }
+      return;
+    }
+
+    // 4. Populated Orders List State
+    orderHistoryContent.innerHTML = orders.map(ord => {
+      let itemsList = [];
+      try {
+        itemsList = typeof ord.items === 'string' ? JSON.parse(ord.items) : (ord.items || []);
+      } catch (e) { itemsList = []; }
+
+      const dateStr = ord.created_at ? new Date(ord.created_at).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true
+      }) : 'Recent';
+
+      const status = ord.status || 'Completed';
+      const statusColor = status.toLowerCase() === 'completed' ? '#27ae60' : '#d9a362';
+
+      return `
+        <div style="background: var(--cream); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e5d2be; padding-bottom: 10px; margin-bottom: 10px;">
+            <div>
+              <strong style="font-size: 0.95rem; color: var(--coffee-brown); font-family: 'Playfair Display', serif;">${ord.order_number || '#BB-ORDER'}</strong>
+              <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i>${dateStr}</div>
+            </div>
+            <span style="background: ${statusColor}15; color: ${statusColor}; border: 1px solid ${statusColor}40; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="fa-solid fa-circle-check" style="margin-right: 4px;"></i>${status}
+            </span>
+          </div>
+
+          <ul style="list-style: none; padding: 0; margin: 0 0 10px 0; font-size: 0.85rem; color: #21120D;">
+            ${itemsList.map(item => `
+              <li style="display: flex; justify-content: space-between; padding: 3px 0;">
+                <span>${item.qty || 1}x ${item.name}</span>
+                <strong>₹${(item.price || 0) * (item.qty || 1)}</strong>
+              </li>
+            `).join('')}
+          </ul>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5d2be; padding-top: 8px; font-size: 0.9rem;">
+            <span style="color: var(--text-muted); font-size: 0.82rem;">Total Amount Paid</span>
+            <strong style="font-size: 1.05rem; color: var(--coffee-brown);">₹${ord.total_amount || 0}</strong>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function closeOrderHistoryModal() {
+    if (orderHistoryModalOverlay) orderHistoryModalOverlay.classList.remove('active');
+  }
+
+  if (closeOrderHistoryModalBtn) closeOrderHistoryModalBtn.addEventListener('click', closeOrderHistoryModal);
+  if (viewHistoryFromCheckoutBtn) {
+    viewHistoryFromCheckoutBtn.addEventListener('click', () => {
+      const checkoutModalOverlay = document.getElementById('checkoutModalOverlay');
+      if (checkoutModalOverlay) checkoutModalOverlay.classList.remove('active');
+      fetchAndShowOrderHistory();
+    });
+  }
+
   function showUserAccountModal(user) {
     let modalOverlay = document.getElementById('userProfileModalOverlay');
     if (!modalOverlay) {
@@ -87,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <p style="color: #cbb9a3; font-size: 14px; margin-bottom: 18px;" id="profileModalEmail">${user.email || ''}</p>
 
           <div style="background: rgba(255,255,255,0.05); padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: left; font-size: 13px; color: #ddd;">
-            <div style="display:flex; justify-space-between; margin-bottom: 8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
               <span><i class="fa-solid fa-phone" style="color:#d9a362; width: 18px;"></i> Phone:</span>
               <strong id="profileModalPhone">${user.phone || 'N/A'}</strong>
             </div>
@@ -101,9 +285,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
           </div>
 
-          <div style="display: flex; gap: 10px;">
-            <button class="btn btn-outline" id="closeProfileDoneBtn" style="flex: 1; padding: 12px;">Close</button>
-            <button class="btn btn-primary" id="logoutBtn" style="flex: 1; padding: 12px; background: #c93b2b; border-color: #c93b2b;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn btn-outline" id="profileOrderHistoryBtn" style="padding: 12px; border-color: #d9a362; color: #d9a362; font-size: 14px;"><i class="fa-solid fa-clock-rotate-left"></i> View Order History</button>
+            <div style="display: flex; gap: 10px;">
+              <button class="btn btn-outline" id="closeProfileDoneBtn" style="flex: 1; padding: 12px;">Close</button>
+              <button class="btn btn-primary" id="logoutBtn" style="flex: 1; padding: 12px; background: #c93b2b; border-color: #c93b2b;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
           </div>
         </div>
       `;
@@ -118,6 +305,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = () => modalOverlay.classList.remove('active');
     document.getElementById('closeProfileModalBtn').onclick = closeModal;
     document.getElementById('closeProfileDoneBtn').onclick = closeModal;
+
+    const profileOrderHistoryBtn = document.getElementById('profileOrderHistoryBtn');
+    if (profileOrderHistoryBtn) {
+      profileOrderHistoryBtn.onclick = () => {
+        closeModal();
+        fetchAndShowOrderHistory();
+      };
+    }
 
     document.getElementById('logoutBtn').onclick = async () => {
       try {
@@ -416,6 +611,35 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       if (receiptSummary) receiptSummary.innerHTML = receiptHTML;
+
+      // Save order to Supabase Backend & Local Storage Cache
+      const user = getLoggedInUser();
+      const orderPayload = {
+        order_number: orderId,
+        user_id: user ? user.id : null,
+        items: cart.map(i => ({ id: i.id, name: i.name, price: i.price, qty: i.qty })),
+        subtotal: subtotal,
+        tax: tax,
+        total_amount: finalAmount,
+        status: 'Completed'
+      };
+
+      saveLocalOrder({
+        ...orderPayload,
+        created_at: new Date().toISOString()
+      });
+
+      try {
+        const token = user?.session?.access_token;
+        fetch('/api/orders/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+          },
+          body: JSON.stringify(orderPayload)
+        }).catch(err => console.warn('Order background sync:', err));
+      } catch (e) {}
 
       // Close drawer & open modal
       closeCart();
