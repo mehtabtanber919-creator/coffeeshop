@@ -508,7 +508,7 @@ function Invoke-ReservationsApi {
 
     $response.AddHeader("Access-Control-Allow-Origin", "*")
     $response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
-    $response.AddHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
+    $response.AddHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PATCH, DELETE")
 
     if ($request.HttpMethod -eq "OPTIONS") {
         $response.StatusCode = 200
@@ -620,6 +620,59 @@ function Invoke-ReservationsApi {
             $response.StatusCode = 400
             $response.ContentType = "application/json; charset=utf-8"
             $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Failed to fetch reservation history."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+    }
+
+    # 3. CANCEL RESERVATION (/api/reservations/cancel)
+    if ($subPath -eq "cancel") {
+        $reader = New-Object System.IO.StreamReader($request.InputStream, $request.ContentEncoding)
+        $bodyText = $reader.ReadToEnd()
+        $reader.Close()
+
+        $data = @{}
+        if (-not [string]::IsNullOrWhiteSpace($bodyText)) {
+            try { $data = $bodyText | ConvertFrom-Json } catch {}
+        }
+
+        $resId = $data.id
+        if (-not $resId) { $resId = $data.reservation_id }
+        if (-not $resId) { $resId = $request.QueryString["id"] }
+
+        if ([string]::IsNullOrWhiteSpace($resId)) {
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes('{"error":"Reservation ID is required."}')
+            $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
+            $response.Close()
+            return
+        }
+
+        $reqHeaders = @{
+            "apikey" = $supabaseAnonKey
+            "Authorization" = $effectiveAuth
+            "Prefer" = "return=representation"
+        }
+
+        $cancelPayload = @{ status = "Cancelled" } | ConvertTo-Json
+
+        try {
+            $updatedRes = Invoke-RestMethod -Uri "$supabaseUrl/rest/v1/reservations?id=eq.$resId" -Headers $reqHeaders -Method Patch -Body $cancelPayload -ContentType "application/json" -ErrorAction Stop
+            $response.StatusCode = 200
+            $response.ContentType = "application/json; charset=utf-8"
+            $respJson = @{ success = $true; message = "Reservation cancelled successfully"; reservation = $updatedRes } | ConvertTo-Json -Depth 5
+            $respBytes = [System.Text.Encoding]::UTF8.GetBytes($respJson)
+            $response.OutputStream.Write($respBytes, 0, $respBytes.Length)
+            $response.Close()
+            return
+        } catch {
+            $errMsg = $_.Exception.Message
+            $response.StatusCode = 400
+            $response.ContentType = "application/json; charset=utf-8"
+            $errJson = @{ error = "Failed to cancel reservation in database."; details = $errMsg } | ConvertTo-Json
+            $errBytes = [System.Text.Encoding]::UTF8.GetBytes($errJson)
             $response.OutputStream.Write($errBytes, 0, $errBytes.Length)
             $response.Close()
             return
