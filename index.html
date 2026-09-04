@@ -1174,6 +1174,25 @@
     </div>
   </div>
 
+  <!-- My Table Reservations Modal -->
+  <div class="modal-overlay" id="reservationsModalOverlay" style="z-index: 99999;">
+    <div class="modal-card reservations-modal-card" style="max-width: 580px; width: 92%; text-align: left; max-height: 85vh; display: flex; flex-direction: column; padding: 2rem; position: relative;">
+      <button class="modal-close-btn" id="closeReservationsModalBtn" aria-label="Close reservations history"><i class="fa-solid fa-xmark"></i></button>
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 1.2rem; border-bottom: 1px solid #e5d2be; padding-bottom: 1rem;">
+        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #27ae60, var(--caramel)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div>
+          <h3 class="modal-title" style="margin-bottom: 2px; font-size: 1.45rem;">My Table Reservations</h3>
+          <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);" id="reservationsUserSub">Your upcoming & past table bookings</p>
+        </div>
+      </div>
+      <div id="reservationsContent" style="overflow-y: auto; flex: 1; padding-right: 4px;">
+        <!-- Dynamic reservations list or state states -->
+      </div>
+    </div>
+  </div>
+
   <!-- Reservation Confirmation Modal -->
   <div class="modal-overlay" id="resModalOverlay">
     <div class="modal-card">
